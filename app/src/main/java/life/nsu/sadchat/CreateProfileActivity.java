@@ -53,7 +53,6 @@ public class CreateProfileActivity extends AppCompatActivity {
     ImageView mChangeImage;
     AppCompatButton mComplete;
 
-    private SharedPreferences preferences;
     private String encodedProfilePicture;
 
     @Override
@@ -67,7 +66,6 @@ public class CreateProfileActivity extends AppCompatActivity {
         mChangeImage = findViewById(R.id.iv_image_change);
         mComplete = findViewById(R.id.btn_complete);
 
-        preferences = getApplication().getApplicationContext().getSharedPreferences("status", Context.MODE_PRIVATE);
         encodedProfilePicture = "default";
 
         mChangeImage.setOnClickListener(new View.OnClickListener() {
@@ -89,10 +87,6 @@ public class CreateProfileActivity extends AppCompatActivity {
                 }
             }
         });
-    }
-
-    private void changeCompleteStatus() {
-        preferences.edit().putBoolean("isCompleted", true).apply();
     }
 
     private boolean isValid() {
@@ -122,7 +116,6 @@ public class CreateProfileActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isComplete()) {
-                    changeCompleteStatus();
                     route();
                 }
             }

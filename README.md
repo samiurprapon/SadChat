@@ -4,15 +4,15 @@
 
 
 ## Features
-- [ ] User  can creat own profile
+- [x] User  can create own profile
 - [ ] Push Notification
-- [ ] Authentication with phone number
-- [ ] User will have his own profile
-- [ ] User can add profile picture
+- [x] Authentication with phone number
+- [x] User will have his own profile
+- [x] User can add profile picture
 - [ ] User can view all user and can communicate with everyone
-- [ ] User can delete message
+- [ ] User can see active status
 - [ ] User can send image
-- [ ] User can block people
+- [ ] User can seen seen status
 - [ ] User can deactivate account
 - [ ] It will have vanish mood (as similar as snapchat)
 
