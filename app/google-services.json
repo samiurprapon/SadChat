@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "767781983363",
+    "project_id": "project-sadchat",
+    "storage_bucket": "project-sadchat.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:767781983363:android:d154bb98a6c2919ce6b7b6",
+        "android_client_info": {
+          "package_name": "life.nsu.sadchat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "767781983363-sm4k72dspc8jnj7r1fntfrosk73hvi88.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCb5Enncpmal9mf6WwDc7QL5kL0LctkFOk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "767781983363-sm4k72dspc8jnj7r1fntfrosk73hvi88.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
