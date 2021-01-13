@@ -10,5 +10,8 @@
     <string name="hint_otp">0 1 2 4 5 6</string>
     <string name="title_complete">Complete</string>
     <string name="title_name">Name</string>
+    <string name="hint_bio">Your bio can be of 60 words...</string>
+    <string name="bio">Bio</string>
+    <string name="placeholder_username">Username</string>
 
 </resources>

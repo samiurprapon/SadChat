@@ -28,8 +28,8 @@ public class SplashActivity extends AppCompatActivity {
         // UI screen
         setContentView(R.layout.activity_splash);
 
-        preferences = getApplication().getApplicationContext().getSharedPreferences("info", Context.MODE_PRIVATE);
-        isProfileCompleted = preferences.getBoolean("complete", false);
+        preferences = getApplication().getApplicationContext().getSharedPreferences("status", Context.MODE_PRIVATE);
+        isProfileCompleted = preferences.getBoolean("isCompleted", false);
 
 //        mProgressBar = findViewById(R.id.progressBar);
 
@@ -49,8 +49,12 @@ public class SplashActivity extends AppCompatActivity {
 
             if(isProfileCompleted) {
                 // if profile not complete then intent to profile setting
-            } else {
                 Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+            } else {
+                // if profile not complete then intent to profile setting
+                Intent intent = new Intent(SplashActivity.this, CreateProfileActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
             }
