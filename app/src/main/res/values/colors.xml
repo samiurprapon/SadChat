@@ -14,5 +14,7 @@
     <color name="violet_dark">#6C619E</color>
 
     <color name="gray">#E2E2E2</color>
+    <color name="gray_400">#414141</color>
+    <color name="faded_white">#4DFFFFFF</color>
 
 </resources>
