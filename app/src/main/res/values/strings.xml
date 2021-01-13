@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Sad Chat</string>
+
+<!--    Login  page -->
+    <string name="title_welcome_back">Welcome back,</string>
+    <string name="title_sign_in_to_continue">sign in to continue…</string>
+    <string name="phone_number_hint">01X XXX XXXXX</string>
+    <string name="title_login">Login</string>
+    <string name="placeholder_country_code">+88</string>
+
 </resources>

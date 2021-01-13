@@ -12,4 +12,7 @@
     <color name="violet">#8D83B7</color>
     <color name="pink_dark">#B7508D</color>
     <color name="violet_dark">#6C619E</color>
+
+    <color name="gray">#E2E2E2</color>
+
 </resources>
