@@ -1,9 +1,7 @@
 package life.nsu.sadchat;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -135,7 +133,7 @@ public class CreateProfileActivity extends AppCompatActivity {
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
-        selectedImage.compress(Bitmap.CompressFormat.JPEG,100, byteArrayOutputStream);
+        selectedImage.compress(Bitmap.CompressFormat.JPEG,20, byteArrayOutputStream);
         encodedProfilePicture = Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.DEFAULT);
     }
 

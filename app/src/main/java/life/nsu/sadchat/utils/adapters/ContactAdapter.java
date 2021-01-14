@@ -1,6 +1,9 @@
 package life.nsu.sadchat.utils.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -26,7 +30,7 @@ import life.nsu.sadchat.models.User;
 
 public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHolder> {
 
-    private Context context;
+    Context context;
 
     private ArrayList<User> contactList;
 
@@ -55,17 +59,36 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
 
             if (user.getActiveStatus().equals("online")){
                 holder.mActive.setVisibility(View.VISIBLE);
-                holder.mUnActive.setVisibility(View.GONE);
             } else {
                 holder.mActive.setVisibility(View.GONE);
-                holder.mUnActive.setVisibility(View.GONE);
             }
+
+            holder.mUnActive.setVisibility(View.GONE);
+
+
         } else {
             holder.mLastText.setVisibility(View.GONE);
             holder.mActive.setVisibility(View.GONE);
+
             holder.mUnActive.setVisibility(View.GONE);
+
         }
 
+        if(!user.getImage().equals("default")) {
+//            Log.d("onBindViewHolder", user.getImage());
+
+            Glide.with(context)
+                    .load(getBitmap(user.getImage()))
+                    .placeholder(R.drawable.ic_profile_avatar)
+                    .circleCrop()
+                    .into(holder.mProfilePicture);
+        }
+    }
+
+    public Bitmap getBitmap(String image) {
+        byte[] imageBytes = Base64.decode(image, Base64.DEFAULT);
+
+        return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
     }
 
     @Override

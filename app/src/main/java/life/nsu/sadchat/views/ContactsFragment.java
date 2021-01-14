@@ -1,6 +1,7 @@
 package life.nsu.sadchat.views;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -29,8 +30,10 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
+import life.nsu.sadchat.MessagingActivity;
 import life.nsu.sadchat.R;
 import life.nsu.sadchat.models.User;
+import life.nsu.sadchat.utils.RecyclerViewClickLister;
 import life.nsu.sadchat.utils.adapters.ContactAdapter;
 
 
@@ -80,6 +83,12 @@ public class ContactsFragment extends Fragment {
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL));
+
+        recyclerView.addOnItemTouchListener(new RecyclerViewClickLister(getContext(), recyclerView, (v, position) -> {
+            Intent intent = new Intent(getActivity(), MessagingActivity.class);
+            intent.putExtra("userId", contactList.get(position).getId());
+            startActivity(intent);
+        }));
 
         mSearch.addTextChangedListener(new TextWatcher() {
             @Override

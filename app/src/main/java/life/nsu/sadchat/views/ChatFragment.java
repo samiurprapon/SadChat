@@ -1,6 +1,7 @@
 package life.nsu.sadchat.views;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -26,9 +27,11 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import life.nsu.sadchat.MessagingActivity;
 import life.nsu.sadchat.R;
 import life.nsu.sadchat.models.ChatItem;
 import life.nsu.sadchat.models.User;
+import life.nsu.sadchat.utils.RecyclerViewClickLister;
 import life.nsu.sadchat.utils.adapters.ContactAdapter;
 
 
@@ -78,7 +81,14 @@ public class ChatFragment extends Fragment {
         chatItems = new ArrayList<>();
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setHasFixedSize(true);
         recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL));
+
+        recyclerView.addOnItemTouchListener(new RecyclerViewClickLister(getContext(), recyclerView, (v, position) -> {
+            Intent intent = new Intent(getActivity(), MessagingActivity.class);
+            intent.putExtra("userId", chatItems.get(position).getId());
+            startActivity(intent);
+        }));
 
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -121,14 +131,12 @@ public class ChatFragment extends Fragment {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     User user = snapshot.getValue(User.class);
 
-                    for (ChatItem chatlist : chatItems) {
-                        if (user != null && user.getId() != null && chatlist != null && chatlist.getId() != null &&
-                                user.getId().equals(chatlist.getId())) {
+                    for (ChatItem chatList : chatItems) {
+                        if (user != null && user.getId() != null && chatList != null && chatList.getId() != null && user.getId().equals(chatList.getId())) {
                             userList.add(user);
                         }
                     }
                 }
-
 
                 adapter = new ContactAdapter(getContext());
                 adapter.setChat(true);
