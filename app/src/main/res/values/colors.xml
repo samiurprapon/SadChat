@@ -10,6 +10,7 @@
 
     <color name="white">#FFFFFFFF</color>
 
+    <color name="blue_dark">#222a35</color>
     <color name="pink">#F099BD</color>
     <color name="violet">#8D83B7</color>
     <color name="pink_dark">#B7508D</color>
