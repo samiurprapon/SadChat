@@ -1,8 +1,11 @@
 package life.nsu.sadchat.views;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -10,11 +13,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -28,12 +26,11 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import java.util.ArrayList;
 import java.util.List;
 
-import life.nsu.sadchat.MessagingActivity;
 import life.nsu.sadchat.R;
 import life.nsu.sadchat.models.ChatItem;
 import life.nsu.sadchat.models.Token;
 import life.nsu.sadchat.models.User;
-import life.nsu.sadchat.utils.RecyclerViewClickLister;
+import life.nsu.sadchat.utils.OnItemClickListener;
 import life.nsu.sadchat.utils.adapters.ContactAdapter;
 
 
@@ -52,14 +49,19 @@ public class ChatFragment extends Fragment {
     FrameLayout frameLayout;
     RecyclerView recyclerView;
 
+    private static OnItemClickListener onItemClickListener;
+
     public ChatFragment() {
         // Required empty public constructor
     }
 
-    public static ChatFragment newInstance() {
+    public static ChatFragment newInstance(OnItemClickListener onItemClick) {
         if(fragment == null) {
             fragment = new ChatFragment();
         }
+
+        onItemClickListener = onItemClick;
+
         return fragment;
     }
 
@@ -115,13 +117,6 @@ public class ChatFragment extends Fragment {
         });
 
         updateToken(FirebaseInstanceId.getInstance().getToken());
-
-        recyclerView.addOnItemTouchListener(new RecyclerViewClickLister(getContext(), recyclerView, (v, position) -> {
-            Intent intent = new Intent(getActivity(), MessagingActivity.class);
-            intent.putExtra("userId", chatItems.get(position).getId());
-            startActivity(intent);
-        }));
-
     }
 
     private void updateToken(String tokenString){
@@ -151,7 +146,7 @@ public class ChatFragment extends Fragment {
                     }
                 }
 
-                adapter = new ContactAdapter(getContext(), userList, true);
+                adapter = new ContactAdapter(getContext(), userList, onItemClickListener, true);
                 recyclerView.setAdapter(adapter);
             }
 

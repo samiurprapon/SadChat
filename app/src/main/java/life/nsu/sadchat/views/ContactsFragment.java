@@ -1,16 +1,7 @@
 package life.nsu.sadchat.views;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -18,6 +9,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -30,10 +28,9 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-import life.nsu.sadchat.MessagingActivity;
 import life.nsu.sadchat.R;
 import life.nsu.sadchat.models.User;
-import life.nsu.sadchat.utils.RecyclerViewClickLister;
+import life.nsu.sadchat.utils.OnItemClickListener;
 import life.nsu.sadchat.utils.adapters.ContactAdapter;
 
 
@@ -49,16 +46,18 @@ public class ContactsFragment extends Fragment {
     private RecyclerView recyclerView;
     EditText mSearch;
 
+    static OnItemClickListener onItemClickListener;
 
     public ContactsFragment() {
         // Required empty public constructor
     }
 
-    public static ContactsFragment newInstance() {
+    public static ContactsFragment newInstance(OnItemClickListener onItemClick) {
         if (fragment == null) {
             fragment = new ContactsFragment();
         }
 
+        onItemClickListener = onItemClick;
         return fragment;
     }
 
@@ -83,12 +82,6 @@ public class ContactsFragment extends Fragment {
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL));
-
-        recyclerView.addOnItemTouchListener(new RecyclerViewClickLister(getContext(), recyclerView, (v, position) -> {
-            Intent intent = new Intent(getActivity(), MessagingActivity.class);
-            intent.putExtra("userId", contactList.get(position).getId());
-            startActivity(intent);
-        }));
 
         mSearch.addTextChangedListener(new TextWatcher() {
             @Override
@@ -129,7 +122,7 @@ public class ContactsFragment extends Fragment {
                     }
                 }
 
-                adapter = new ContactAdapter(getContext(), contactList, false);
+                adapter = new ContactAdapter(getContext(), contactList, onItemClickListener, false);
                 recyclerView.setAdapter(adapter);
             }
 
@@ -164,7 +157,7 @@ public class ContactsFragment extends Fragment {
                         frameLayout.setVisibility(View.GONE);
                     }
 
-                    adapter = new ContactAdapter(getContext(), contactList, false);
+                    adapter = new ContactAdapter(getContext(), contactList, onItemClickListener, false);
                     recyclerView.setAdapter(adapter);
                 }
             }

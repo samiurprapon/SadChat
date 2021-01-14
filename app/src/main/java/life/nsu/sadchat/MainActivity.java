@@ -26,11 +26,13 @@ import life.nsu.sadchat.models.Chat;
 import life.nsu.sadchat.models.User;
 import life.nsu.sadchat.utils.CustomLoader;
 import life.nsu.sadchat.utils.FragmentAdapter;
+import life.nsu.sadchat.utils.OnItemClickListener;
 import life.nsu.sadchat.views.ChatFragment;
 import life.nsu.sadchat.views.ContactsFragment;
 import life.nsu.sadchat.views.ProfileFragment;
+import life.nsu.sadchat.views.ViewProfileActivity;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OnItemClickListener {
 
     DatabaseReference reference;
 
@@ -41,11 +43,15 @@ public class MainActivity extends AppCompatActivity {
 
     private CustomLoader dialog;
 
+    OnItemClickListener onItemClick;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         setContentView(R.layout.activity_main);
+
+        this.onItemClick = this;
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -54,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
         dialog = new CustomLoader(this);
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-
 
         mProfilePicture =  findViewById(R.id.ci_profile_picture);
         mUsername = findViewById(R.id.tv_username);
@@ -114,14 +119,13 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (unread == 0){
-                    adapter.addFragment(ChatFragment.newInstance(), "Chats");
+                    adapter.addFragment(ChatFragment.newInstance(onItemClick), "Chats");
                 } else {
-                    adapter.addFragment(ChatFragment.newInstance(), "("+unread+") "+ "Chats");
+                    adapter.addFragment(ChatFragment.newInstance(onItemClick), "("+unread+") "+ "Chats");
                 }
 
-
-                adapter.addFragment(ContactsFragment.newInstance(), "Users");
-                adapter.addFragment(ProfileFragment.newInstance(), "Profile");
+                adapter.addFragment(ContactsFragment.newInstance(onItemClick), "Users");
+                adapter.addFragment(ProfileFragment.newInstance(onItemClick), "Profile");
 
                 viewPager.setAdapter(adapter);
 
@@ -152,6 +156,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onItemClick(String id, View v) {
+        ViewProfileActivity viewProfileActivity = ViewProfileActivity.newInstance(id,this);
+
+        viewProfileActivity.show(getSupportFragmentManager(), "view_profile");
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         updateActiveStatus("online");
@@ -162,4 +173,5 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
         updateActiveStatus("offline");
     }
+
 }

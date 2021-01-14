@@ -11,18 +11,24 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import life.nsu.sadchat.R;
+import life.nsu.sadchat.utils.OnItemClickListener;
 
 public class ProfileFragment extends Fragment {
     private static ProfileFragment fragment = null;
+
+    static OnItemClickListener onItemClickListener;
+
 
     public ProfileFragment() {
         // Required empty public constructor
     }
 
-    public static ProfileFragment newInstance() {
+    public static ProfileFragment newInstance(OnItemClickListener onItemClick) {
         if (fragment == null) {
             fragment = new ProfileFragment();
         }
+
+        onItemClickListener = onItemClick;
 
         return fragment;
     }

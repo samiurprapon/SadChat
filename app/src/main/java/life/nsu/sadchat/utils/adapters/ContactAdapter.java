@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import life.nsu.sadchat.R;
 import life.nsu.sadchat.models.Chat;
 import life.nsu.sadchat.models.User;
+import life.nsu.sadchat.utils.OnItemClickListener;
 
 public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHolder> {
 
@@ -37,14 +38,19 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
     private boolean isChat;
     private String theLastMessage;
 
+    OnItemClickListener onItemClickListener;
+
     public ContactAdapter(Context context) {
         this.context = context;
     }
 
-    public ContactAdapter(Context context, ArrayList<User> contactList, boolean isChat) {
+    public ContactAdapter(Context context, ArrayList<User> contactList, OnItemClickListener onItemClick, boolean isChat) {
         this.context = context;
         this.contactList = contactList;
         this.isChat = isChat;
+        this.onItemClickListener = onItemClick;
+
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -88,6 +94,13 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
                     .circleCrop()
                     .into(holder.mProfilePicture);
         }
+
+        holder.mProfilePicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onItemClickListener.onItemClick(user.getId(), v);
+            }
+        });
     }
 
     public Bitmap getBitmap(String image) {
@@ -99,16 +112,6 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
     @Override
     public int getItemCount() {
         return contactList.size();
-    }
-
-
-    public void setContactList(ArrayList<User> contactList) {
-        this.contactList = contactList;
-        notifyDataSetChanged();
-    }
-
-    public void setChat(boolean chat) {
-        isChat = chat;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
