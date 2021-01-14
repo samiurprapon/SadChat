@@ -30,8 +30,9 @@ public class ViewProfileActivity extends BottomSheetDialogFragment {
 
     String uid;
     DatabaseReference reference;
-    TextView username, bio_et;
-    ImageView profile_img;
+    TextView mUsername;
+    TextView mBio;
+    ImageView mProfilePicture;
 
     @SuppressLint("StaticFieldLeak")
     private static Context mContext;
@@ -57,9 +58,9 @@ public class ViewProfileActivity extends BottomSheetDialogFragment {
         if (getArguments() != null) {
 
             uid = getArguments().getString("uid");
-            profile_img = view.findViewById(R.id.ci_profile_image);
-            username = view.findViewById(R.id.tv_username);
-            bio_et = view.findViewById(R.id.et_bio);
+            mProfilePicture = view.findViewById(R.id.ci_profile_image);
+            mUsername = view.findViewById(R.id.tv_username);
+            mBio = view.findViewById(R.id.et_bio);
 
             reference = FirebaseDatabase.getInstance().getReference("users").child(uid);
             reference.addValueEventListener(new ValueEventListener() {
@@ -67,17 +68,17 @@ public class ViewProfileActivity extends BottomSheetDialogFragment {
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     User user = dataSnapshot.getValue(User.class);
 
-                    username.setText(user.getUsername());
-                    bio_et.setText(user.getBio());
+                    mUsername.setText(user.getUsername());
+                    mBio.setText(user.getBio());
 
                     if (user.getImage().equals("default")) {
-                        profile_img.setImageResource(R.drawable.ic_profile_avatar);
+                        mProfilePicture.setImageResource(R.drawable.ic_profile_avatar);
                     } else {
                         Glide.with(mContext)
                                 .load(getBitmap(user.getImage()))
                                 .placeholder(R.drawable.ic_profile_avatar)
                                 .circleCrop()
-                                .into(profile_img);
+                                .into(mProfilePicture);
                     }
                 }
 
