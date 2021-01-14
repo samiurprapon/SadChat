@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.SadChat" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.SadChat" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/violet</item>
         <item name="colorPrimaryVariant">@color/violet_dark</item>
@@ -14,6 +14,10 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+    </style>
+
+    <style name="Messaging" parent="ThemeOverlay.AppCompat.ActionBar">
+
     </style>
 
     <style name="CustomAlertDialog" parent="Theme.AppCompat.Dialog.Alert">

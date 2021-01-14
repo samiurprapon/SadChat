@@ -1,9 +1,6 @@
 package life.nsu.sadchat;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.util.Base64;
 import android.view.View;
 import android.widget.TextView;
 
@@ -35,16 +32,12 @@ import life.nsu.sadchat.views.ProfileFragment;
 
 public class MainActivity extends AppCompatActivity {
 
-    private DatabaseReference accountReference;
     DatabaseReference reference;
 
     private FirebaseUser firebaseUser;
 
     private CircleImageView mProfilePicture;
     private TextView mUsername;
-    TabLayout tabLayout;
-    ViewPager viewPager;
-    private FragmentAdapter adapter;
 
     private CustomLoader dialog;
 
@@ -62,15 +55,12 @@ public class MainActivity extends AppCompatActivity {
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        accountReference = FirebaseDatabase.getInstance().getReference("users").child(firebaseUser.getUid());
-        reference = FirebaseDatabase.getInstance().getReference("chats");
 
         mProfilePicture =  findViewById(R.id.ci_profile_picture);
         mUsername = findViewById(R.id.tv_username);
-        tabLayout = findViewById(R.id.tab_layout);
-        viewPager = findViewById(R.id.view_pager);
 
-        adapter = new FragmentAdapter(getSupportFragmentManager());
+        final TabLayout tabLayout = findViewById(R.id.tab_layout);
+        final ViewPager viewPager = findViewById(R.id.view_pager);
 
         mProfilePicture.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,14 +70,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        accountReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        reference = FirebaseDatabase.getInstance().getReference("users").child(firebaseUser.getUid());
+
+        reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
 
                 mUsername.setText(user.getUsername());
 
-                if (!user.getImage().equals("default")){
+                if (user.getImage() != null &&!user.getImage().equals("default")){
 
                     Glide.with(MainActivity.this)
                             .load(user.getBitmap())
@@ -103,17 +95,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        reference = FirebaseDatabase.getInstance().getReference("chats");
         dialog.show();
 
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                adapter.addFragment(ChatFragment.newInstance());
-                adapter.addFragment(ContactsFragment.newInstance());
-                adapter.addFragment(ProfileFragment.newInstance());
-
-                viewPager.setAdapter(adapter);
+                FragmentAdapter adapter = new FragmentAdapter(getSupportFragmentManager());
 
                 int unread = 0;
 
@@ -125,18 +113,19 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
-                tabLayout.setupWithViewPager(viewPager, true);
-
-                tabLayout.getTabAt(0).setText(R.string.tab_chats);
-
                 if (unread == 0){
-                    tabLayout.getTabAt(1).setText(R.string.tab_contacts);
+                    adapter.addFragment(ChatFragment.newInstance(), "Chats");
                 } else {
-                    tabLayout.getTabAt(1).setText("("+unread+") "+R.string.tab_contacts);
+                    adapter.addFragment(ChatFragment.newInstance(), "("+unread+") "+ "Chats");
                 }
 
-                // set tab layout text
-                tabLayout.getTabAt(2).setText(R.string.tab_profile);
+
+                adapter.addFragment(ContactsFragment.newInstance(), "Users");
+                adapter.addFragment(ProfileFragment.newInstance(), "Profile");
+
+                viewPager.setAdapter(adapter);
+
+                tabLayout.setupWithViewPager(viewPager);
 
                 if(dialog != null) {
                     dialog.hide();
@@ -154,10 +143,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateActiveStatus(String status) {
+        reference = FirebaseDatabase.getInstance().getReference("users").child(firebaseUser.getUid());
+
         HashMap<String, Object> activeStatus = new HashMap<>();
         activeStatus.put("activeStatus", status);
 
-        accountReference.updateChildren(activeStatus);
+        reference.updateChildren(activeStatus);
     }
 
     @Override

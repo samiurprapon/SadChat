@@ -1,9 +1,11 @@
 package life.nsu.sadchat.models;
 
 public class ChatItem {
-    public String id;
+
+    private String id;
 
     public ChatItem() {
+        // default constructor
     }
 
     public ChatItem(String id) {

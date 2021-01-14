@@ -23,6 +23,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,7 @@ import java.util.List;
 import life.nsu.sadchat.MessagingActivity;
 import life.nsu.sadchat.R;
 import life.nsu.sadchat.models.ChatItem;
+import life.nsu.sadchat.models.Token;
 import life.nsu.sadchat.models.User;
 import life.nsu.sadchat.utils.RecyclerViewClickLister;
 import life.nsu.sadchat.utils.adapters.ContactAdapter;
@@ -73,22 +75,18 @@ public class ChatFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        reference = FirebaseDatabase.getInstance().getReference("chats").child(firebaseUser.getUid());
 
         recyclerView = view.findViewById(R.id.recycler_view);
         frameLayout = view.findViewById(R.id.lt_empty_layout);
 
         chatItems = new ArrayList<>();
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setHasFixedSize(true);
-        recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL));
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL);
+        recyclerView.addItemDecoration(dividerItemDecoration);
 
-        recyclerView.addOnItemTouchListener(new RecyclerViewClickLister(getContext(), recyclerView, (v, position) -> {
-            Intent intent = new Intent(getActivity(), MessagingActivity.class);
-            intent.putExtra("userId", chatItems.get(position).getId());
-            startActivity(intent);
-        }));
+        reference = FirebaseDatabase.getInstance().getReference("chatsList").child(firebaseUser.getUid());
 
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -97,6 +95,7 @@ public class ChatFragment extends Fragment {
 
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     ChatItem chatItem = snapshot.getValue(ChatItem.class);
+
                     chatItems.add(chatItem);
                 }
 
@@ -115,6 +114,20 @@ public class ChatFragment extends Fragment {
             }
         });
 
+        updateToken(FirebaseInstanceId.getInstance().getToken());
+
+        recyclerView.addOnItemTouchListener(new RecyclerViewClickLister(getContext(), recyclerView, (v, position) -> {
+            Intent intent = new Intent(getActivity(), MessagingActivity.class);
+            intent.putExtra("userId", chatItems.get(position).getId());
+            startActivity(intent);
+        }));
+
+    }
+
+    private void updateToken(String tokenString){
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("tokens");
+        Token token = new Token(tokenString);
+        reference.child(firebaseUser.getUid()).setValue(token);
     }
 
 
@@ -138,9 +151,7 @@ public class ChatFragment extends Fragment {
                     }
                 }
 
-                adapter = new ContactAdapter(getContext());
-                adapter.setChat(true);
-                adapter.setContactList(userList);
+                adapter = new ContactAdapter(getContext(), userList, true);
                 recyclerView.setAdapter(adapter);
             }
 

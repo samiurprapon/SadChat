@@ -4,7 +4,7 @@ public class Chat {
     private String sender;
     private String receiver;
     private String message;
-    private boolean seen;
+    private boolean isSeen;
     private String time;
 
     public Chat() {
@@ -15,7 +15,7 @@ public class Chat {
         this.sender = sender;
         this.receiver = receiver;
         this.message = message;
-        this.seen = isSeen;
+        this.isSeen = isSeen;
         this.time = time;
     }
 
@@ -44,11 +44,11 @@ public class Chat {
     }
 
     public boolean isSeen() {
-        return seen;
+        return isSeen;
     }
 
-    public void setSeen(boolean seen) {
-        this.seen = seen;
+    public void setSeen(boolean isSeen) {
+        this.isSeen = isSeen;
     }
 
     public String getTime() {

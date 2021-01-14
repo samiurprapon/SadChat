@@ -35,10 +35,16 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
     private ArrayList<User> contactList;
 
     private boolean isChat;
-    private String lastText;
+    private String theLastMessage;
 
     public ContactAdapter(Context context) {
         this.context = context;
+    }
+
+    public ContactAdapter(Context context, ArrayList<User> contactList, boolean isChat) {
+        this.context = context;
+        this.contactList = contactList;
+        this.isChat = isChat;
     }
 
     @NonNull
@@ -54,27 +60,26 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
 
         holder.mUsername.setText(user.getUsername());
 
-        if (isChat){
+        if (isChat) {
             lastMessage(user.getId(), holder.mLastText);
 
-            if (user.getActiveStatus().equals("online")){
+            if (user.getActiveStatus().equals("online")) {
                 holder.mActive.setVisibility(View.VISIBLE);
+                holder.mUnActive.setVisibility(View.GONE);
+
             } else {
                 holder.mActive.setVisibility(View.GONE);
+                holder.mUnActive.setVisibility(View.VISIBLE);
             }
-
-            holder.mUnActive.setVisibility(View.GONE);
-
 
         } else {
             holder.mLastText.setVisibility(View.GONE);
+
             holder.mActive.setVisibility(View.GONE);
-
             holder.mUnActive.setVisibility(View.GONE);
-
         }
 
-        if(!user.getImage().equals("default")) {
+        if (!user.getImage().equals("default")) {
 //            Log.d("onBindViewHolder", user.getImage());
 
             Glide.with(context)
@@ -106,7 +111,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         isChat = chat;
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder{
+    public static class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView mUsername;
         ImageView mProfilePicture;
@@ -127,8 +132,8 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
 
 
     //check for last message
-    private void lastMessage(final String userid, final TextView lastText){
-        this.lastText = "default";
+    private void lastMessage(String userId, final TextView lastText) {
+        theLastMessage = "default";
 
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("chats");
@@ -136,24 +141,25 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Chat chat = snapshot.getValue(Chat.class);
 
                     if (firebaseUser != null && chat != null) {
-                        if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid) ||
-                                chat.getReceiver().equals(userid) && chat.getSender().equals(firebaseUser.getUid())) {
-                            ContactAdapter.this.lastText = chat.getMessage();
+                        if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userId) ||
+                                chat.getReceiver().equals(userId) && chat.getSender().equals(firebaseUser.getUid())) {
+
+                            theLastMessage = chat.getMessage();
                         }
                     }
                 }
 
-                if ("default".equals(ContactAdapter.this.lastText)) {
+                if ("default".equals(theLastMessage)) {
                     lastText.setText(R.string.title_last_text);
                 } else {
-                    lastText.setText(ContactAdapter.this.lastText);
+                    lastText.setText(theLastMessage);
                 }
 
-                ContactAdapter.this.lastText = "default";
+                theLastMessage = "default";
             }
 
             @Override

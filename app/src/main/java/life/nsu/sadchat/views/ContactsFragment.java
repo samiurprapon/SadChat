@@ -129,9 +129,7 @@ public class ContactsFragment extends Fragment {
                     }
                 }
 
-                adapter = new ContactAdapter(getContext());
-                adapter.setContactList(contactList);
-                adapter.setChat(false);
+                adapter = new ContactAdapter(getContext(), contactList, false);
                 recyclerView.setAdapter(adapter);
             }
 
@@ -144,8 +142,7 @@ public class ContactsFragment extends Fragment {
     }
 
     private void readUsers() {
-
-        final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users");
 
         reference.addValueEventListener(new ValueEventListener() {
@@ -167,10 +164,7 @@ public class ContactsFragment extends Fragment {
                         frameLayout.setVisibility(View.GONE);
                     }
 
-                    adapter = new ContactAdapter(getContext());
-
-                    adapter.setContactList(contactList);
-                    adapter.setChat(false);
+                    adapter = new ContactAdapter(getContext(), contactList, false);
                     recyclerView.setAdapter(adapter);
                 }
             }

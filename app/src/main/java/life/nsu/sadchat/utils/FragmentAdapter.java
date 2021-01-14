@@ -10,10 +10,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FragmentAdapter extends FragmentPagerAdapter {
-    private final List<Fragment> fragmentList = new ArrayList<>();
+
+    private ArrayList<Fragment> fragmentList;
+    private ArrayList<String> titles;
 
     public FragmentAdapter(FragmentManager fm) {
         super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+
+        fragmentList = new ArrayList<>();
+        titles = new ArrayList<>();
     }
 
     @NonNull
@@ -27,13 +32,16 @@ public class FragmentAdapter extends FragmentPagerAdapter {
         return fragmentList.size();
     }
 
-    public void addFragment(Fragment fragment) {
+    public void addFragment(Fragment fragment, String title) {
         fragmentList.add(fragment);
+        titles.add(title);
+
     }
+
 
     @Nullable
     @Override
     public CharSequence getPageTitle(int position) {
-        return super.getPageTitle(position);
+        return titles.get(position);
     }
 }
