@@ -88,11 +88,9 @@ public class MainActivity extends AppCompatActivity {
                 mUsername.setText(user.getUsername());
 
                 if (!user.getImage().equals("default")){
-                    byte[] imageBytes = Base64.decode(user.getImage(), Base64.DEFAULT);
-                    Bitmap decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
 
                     Glide.with(MainActivity.this)
-                            .load(decodedImage)
+                            .load(user.getBitmap())
                             .placeholder(R.drawable.ic_profile_avatar)
                             .circleCrop()
                             .into(mProfilePicture);
