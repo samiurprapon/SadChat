@@ -12,7 +12,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SadChat">
-        <activity android:name=".MessagingActivity"></activity>
+
+        <service
+            android:name="life.nsu.sadchat.utils.fcm.MyFirebaseIdService"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
+
+        <activity android:name=".MessagingActivity" />
         <activity android:name=".CreateProfileActivity" />
         <activity
             android:name=".MainActivity"
