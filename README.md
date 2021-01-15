@@ -9,12 +9,12 @@
 - [x] Authentication with phone number
 - [x] User will have his own profile
 - [x] User can add profile picture
-- [ ] User can view all user and can communicate with everyone
+- [x] User can view all user and can communicate with everyone
 - [ ] User can see active status
 - [ ] User can send image
 - [ ] User can seen seen status
 - [ ] User can deactivate account
-- [ ] It will have vanish mood (as similar as snapchat)
+- [ ] User can not take screenshot
 
 ## Platform
 Runs on `Android`

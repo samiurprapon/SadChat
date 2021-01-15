@@ -21,11 +21,17 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-import life.nsu.sadchat.utils.CustomProgressBar;
+import life.nsu.sadchat.models.User;
+import life.nsu.sadchat.utils.CustomLoader;
 
 public class VerificationActivity extends AppCompatActivity {
 
@@ -35,14 +41,14 @@ public class VerificationActivity extends AppCompatActivity {
     private String verificationId;
 
     private FirebaseAuth mAuth;
-    private CustomProgressBar progressBar;
+    private CustomLoader progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_verification);
 
-        progressBar = new CustomProgressBar(this);
+        progressBar = new CustomLoader(this);
         mAuth = FirebaseAuth.getInstance();
 
         mVerificationCode = findViewById(R.id.et_verification_code);
@@ -61,7 +67,7 @@ public class VerificationActivity extends AppCompatActivity {
                     mVerificationCode.setError("incomplete");
                     return;
                 }
-                progressBar.show("");
+                progressBar.show();
 
                 verify(code);
 
@@ -149,11 +155,34 @@ public class VerificationActivity extends AppCompatActivity {
         super.onStop();
     }
 
-    private void route() {
-        Intent intent = new Intent(VerificationActivity.this, CreateProfileActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
-        startActivity(intent);
+    private void route() {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users").child(FirebaseAuth.getInstance().getUid());
+
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                User user = snapshot.getValue(User.class);
+                Intent intent;
+
+                if (user.getUsername() == null || user.getUsername().isEmpty() || user.getImage().equals("default")) {
+                    intent = new Intent(VerificationActivity.this, CreateProfileActivity.class);
+                } else {
+                    intent = new Intent(VerificationActivity.this, MainActivity.class);
+                }
+
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // check internet connection and retry
+            }
+        });
+
     }
+
 
 }

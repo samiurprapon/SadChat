@@ -58,10 +58,11 @@ public class SplashActivity extends AppCompatActivity {
                     User user = snapshot.getValue(User.class);
                     Intent intent;
 
-                    if (user.getUsername() != null) {
-                        intent = new Intent(SplashActivity.this, MainActivity.class);
-                    } else {
+                    if (user.getUsername() == null || user.getUsername().isEmpty() || user.getImage().equals("default")) {
                         intent = new Intent(SplashActivity.this, CreateProfileActivity.class);
+                    } else {
+                        intent = new Intent(SplashActivity.this, MainActivity.class);
+
                     }
 
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

@@ -1,9 +1,5 @@
 package life.nsu.sadchat.models;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Base64;
-
 public class User {
     private String id;
     private String username;
@@ -49,9 +45,4 @@ public class User {
         return activeStatus;
     }
 
-    public Bitmap getBitmap() {
-        byte[] imageBytes = Base64.decode(this.image, Base64.DEFAULT);
-
-        return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-    }
 }

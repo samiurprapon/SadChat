@@ -67,7 +67,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             holder.mProfilePicture.setImageResource(R.drawable.ic_profile_avatar);
         } else {
             Glide.with(context)
-                    .load(user.getBitmap())
+                    .load(user.getImage())
                     .placeholder(R.drawable.ic_profile_avatar)
                     .circleCrop()
                     .into(holder.mProfilePicture);

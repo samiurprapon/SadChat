@@ -1,6 +1,5 @@
 package life.nsu.sadchat;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
@@ -53,6 +52,7 @@ public class MessagingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         setContentView(R.layout.activity_messaging);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -63,7 +63,7 @@ public class MessagingActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MessagingActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+              onBackPressed();
             }
         });
 
@@ -115,8 +115,8 @@ public class MessagingActivity extends AppCompatActivity {
                 if (user.getImage() == null || user.getImage().equals("default") ) {
                     mProfilePicture.setImageResource(R.drawable.ic_profile_avatar);
                 } else {
-                    Glide.with(MessagingActivity.this)
-                            .load(user.getBitmap())
+                    Glide.with(getApplicationContext())
+                            .load(user.getImage())
                             .placeholder(R.drawable.ic_profile_avatar)
                             .circleCrop()
                             .into(mProfilePicture);
@@ -275,5 +275,11 @@ public class MessagingActivity extends AppCompatActivity {
         updateActiveStatus("offline");
         currentUser(userId);
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
 }

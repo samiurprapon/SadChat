@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                 if (user.getImage() != null && !user.getImage().equals("default")) {
 
                     Glide.with(getApplicationContext())
-                            .load(user.getBitmap())
+                            .load(user.getImage())
                             .placeholder(R.drawable.ic_profile_avatar)
                             .circleCrop()
                             .into(mProfilePicture);

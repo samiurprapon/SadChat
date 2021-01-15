@@ -76,7 +76,7 @@ public class ViewProfileActivity extends BottomSheetDialogFragment {
                         mProfilePicture.setImageResource(R.drawable.ic_profile_avatar);
                     } else {
                         Glide.with(context)
-                                .load(getBitmap(user.getImage()))
+                                .load(user.getImage())
                                 .placeholder(R.drawable.ic_profile_avatar)
                                 .circleCrop()
                                 .into(mProfilePicture);
@@ -91,11 +91,5 @@ public class ViewProfileActivity extends BottomSheetDialogFragment {
         }
 
         return view;
-    }
-
-    public Bitmap getBitmap(String image) {
-        byte[] imageBytes = Base64.decode(image, Base64.DEFAULT);
-
-        return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
     }
 }

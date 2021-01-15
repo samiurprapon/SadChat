@@ -1,16 +1,15 @@
 package life.nsu.sadchat;
 
 import android.Manifest;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -21,11 +20,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.content.ContextCompat;
 
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.StorageTask;
+import com.google.firebase.storage.UploadTask;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionDeniedResponse;
@@ -35,9 +40,6 @@ import com.karumi.dexter.listener.single.PermissionListener;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -51,7 +53,11 @@ public class CreateProfileActivity extends AppCompatActivity {
     ImageView mChangeImage;
     AppCompatButton mComplete;
 
-    private String encodedProfilePicture;
+    DatabaseReference reference;
+    StorageReference storageReference;
+    StorageTask<UploadTask.TaskSnapshot> uploadTask;
+
+    private String imageUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +70,9 @@ public class CreateProfileActivity extends AppCompatActivity {
         mChangeImage = findViewById(R.id.iv_image_change);
         mComplete = findViewById(R.id.btn_complete);
 
-        encodedProfilePicture = "default";
+        storageReference = FirebaseStorage.getInstance().getReference("profile");
+
+        imageUrl = "default";
 
         mChangeImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,6 +99,45 @@ public class CreateProfileActivity extends AppCompatActivity {
         return !mUsername.getText().toString().trim().isEmpty();
     }
 
+    private void uploadImage(Uri imageUri) {
+        StorageReference fileReference = storageReference.child(FirebaseAuth.getInstance().getUid() +"."+getFileExtension(imageUri));
+
+        uploadTask = fileReference.putFile(imageUri);
+
+        uploadTask = fileReference.putFile(imageUri);
+
+        uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+            @Override
+            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                if (!task.isSuccessful()){
+                    throw  task.getException();
+                }
+
+                return  fileReference.getDownloadUrl();
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task) {
+                if (task.isSuccessful()){
+                    imageUrl = task.getResult().toString();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Failed!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private String getFileExtension(Uri uri){
+        ContentResolver contentResolver = getContentResolver();
+        MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
+        return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri));
+    }
+
     private void syncData() {
         String username = mUsername.getText().toString().trim();
         String bio = mBio.getText().toString().trim();
@@ -103,7 +150,7 @@ public class CreateProfileActivity extends AppCompatActivity {
         userInformation.put("id", uid);
         userInformation.put("username", username);
         userInformation.put("phone", phoneNumber);
-        userInformation.put("image", encodedProfilePicture);
+        userInformation.put("image", imageUrl);
         userInformation.put("activeStatus", "offline");
 
         if (!bio.isEmpty()) {
@@ -121,21 +168,6 @@ public class CreateProfileActivity extends AppCompatActivity {
 
     }
 
-    private void encodeProfilePicture(Uri imageUri) {
-        InputStream imageStream = null;
-        try {
-            imageStream = getContentResolver().openInputStream(imageUri);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-
-        selectedImage.compress(Bitmap.CompressFormat.JPEG,20, byteArrayOutputStream);
-        encodedProfilePicture = Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.DEFAULT);
-    }
 
     private void route() {
         Intent intent = new Intent(CreateProfileActivity.this, MainActivity.class);
@@ -162,7 +194,8 @@ public class CreateProfileActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 //Store image in firebase storage
 
-                encodeProfilePicture(result.getUri());
+                uploadImage(result.getUri());
+
                 mProfilePicture.setImageURI(result.getUri());
 
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {

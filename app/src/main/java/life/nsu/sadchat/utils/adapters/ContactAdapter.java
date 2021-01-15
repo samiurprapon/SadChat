@@ -2,9 +2,6 @@ package life.nsu.sadchat.utils.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -87,7 +84,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
 //            Log.d("onBindViewHolder", user.getImage());
 
             Glide.with(context)
-                    .load(getBitmap(user.getImage()))
+                    .load(user.getImage())
                     .placeholder(R.drawable.ic_profile_avatar)
                     .circleCrop()
                     .into(holder.mProfilePicture);
@@ -110,11 +107,6 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         });
     }
 
-    public Bitmap getBitmap(String image) {
-        byte[] imageBytes = Base64.decode(image, Base64.DEFAULT);
-
-        return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-    }
 
     @Override
     public int getItemCount() {

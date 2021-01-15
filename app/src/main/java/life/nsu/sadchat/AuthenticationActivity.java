@@ -14,7 +14,7 @@ import androidx.appcompat.widget.AppCompatButton;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import life.nsu.sadchat.utils.CustomProgressBar;
+import life.nsu.sadchat.utils.CustomLoader;
 
 public class AuthenticationActivity extends AppCompatActivity {
 
@@ -22,7 +22,7 @@ public class AuthenticationActivity extends AppCompatActivity {
     EditText mPhone;
     AppCompatButton mLogin;
 
-    CustomProgressBar progressBar;
+    CustomLoader progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,14 +34,14 @@ public class AuthenticationActivity extends AppCompatActivity {
         mPhone = findViewById(R.id.et_phone);
         mLogin = findViewById(R.id.btn_login);
 
-        progressBar = new CustomProgressBar(this);
+        progressBar = new CustomLoader(this);
 
         mLogin.setOnClickListener(v -> {
             final String phoneNumber = mPhone.getText().toString().trim();
             final String code = mCountryCode.getText().toString();
 
             if (phoneValidation(phoneNumber) && countryCodeValidation(code + phoneNumber)) {
-                progressBar.show("");
+                progressBar.show();
 
                 new Handler(Looper.myLooper()).postDelayed(new Runnable() {
                     @Override
