@@ -14,7 +14,7 @@
 - [ ] User can send image
 - [ ] User can seen seen status
 - [ ] User can deactivate account
-- [ ] User can not take screenshot
+- [x] User can not take screenshot
 
 ## Platform
 Runs on `Android`
