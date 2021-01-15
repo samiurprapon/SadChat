@@ -1,14 +1,14 @@
 package life.nsu.sadchat.models;
 
-public class ChatItem {
+public class ChatList {
 
     private String id;
 
-    public ChatItem() {
+    public ChatList() {
         // default constructor
     }
 
-    public ChatItem(String id) {
+    public ChatList(String id) {
         this.id = id;
     }
 

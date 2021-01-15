@@ -1,6 +1,7 @@
 package life.nsu.sadchat;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -36,7 +37,6 @@ public class MessagingActivity extends AppCompatActivity {
 
     FirebaseUser firebaseUser;
     DatabaseReference reference;
-    DatabaseReference accountReference;
 
     CircleImageView mProfilePicture;
     TextView mUsername;
@@ -63,7 +63,6 @@ public class MessagingActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // and this
                 startActivity(new Intent(MessagingActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             }
         });
@@ -79,8 +78,8 @@ public class MessagingActivity extends AppCompatActivity {
         mUsername = findViewById(R.id.tv_username);
         mSend = findViewById(R.id.btn_send);
         mTextMessage = findViewById(R.id.et_message);
-
         recyclerView = findViewById(R.id.recycler_view);
+
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setStackFromEnd(true);
@@ -91,11 +90,11 @@ public class MessagingActivity extends AppCompatActivity {
             public void onClick(View view) {
                 //ToDo
                 // add notification here
-                String msg = mTextMessage.getText().toString();
+                String message = mTextMessage.getText().toString();
                 String time = String.valueOf(System.currentTimeMillis());
 
-                if (!msg.equals("")) {
-                    sendMessage(firebaseUser.getUid(), userId, msg, time);
+                if (!message.equals("")) {
+                    sendMessage(firebaseUser.getUid(), userId, message, time);
 
                     // clear message box
                     mTextMessage.setText("");
@@ -135,7 +134,7 @@ public class MessagingActivity extends AppCompatActivity {
         seenMessage(userId);
     }
 
-    private void seenMessage(final String userid) {
+    private void seenMessage(final String userId) {
         reference = FirebaseDatabase.getInstance().getReference("chats");
 
         seenListener = reference.addValueEventListener(new ValueEventListener() {
@@ -144,7 +143,7 @@ public class MessagingActivity extends AppCompatActivity {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Chat chat = snapshot.getValue(Chat.class);
 
-                    if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid)) {
+                    if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userId)) {
                         HashMap<String, Object> hashMap = new HashMap<>();
                         hashMap.put("isSeen", true);
                         snapshot.getRef().updateChildren(hashMap);
@@ -202,9 +201,9 @@ public class MessagingActivity extends AppCompatActivity {
         // for notification purpose
         String encryptedMessage = message;
 
-        accountReference = FirebaseDatabase.getInstance().getReference("users").child(firebaseUser.getUid());
+        reference = FirebaseDatabase.getInstance().getReference("users").child(firebaseUser.getUid());
 
-        accountReference.addValueEventListener(new ValueEventListener() {
+        reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
@@ -235,11 +234,7 @@ public class MessagingActivity extends AppCompatActivity {
                         chats.add(chat);
                     }
 
-                    adapter = new MessageAdapter(MessagingActivity.this);
-
-                    adapter.setChatList(chats);
-                    adapter.setUser(user);
-
+                    adapter = new MessageAdapter(MessagingActivity.this, chats, user);
                     recyclerView.setAdapter(adapter);
                 }
             }
@@ -253,23 +248,32 @@ public class MessagingActivity extends AppCompatActivity {
 
 
     private void updateActiveStatus(String status) {
-        accountReference = FirebaseDatabase.getInstance().getReference("users").child(firebaseUser.getUid());
+        reference = FirebaseDatabase.getInstance().getReference("users").child(firebaseUser.getUid());
 
         HashMap<String, Object> activeStatus = new HashMap<>();
         activeStatus.put("activeStatus", status);
 
-        accountReference.updateChildren(activeStatus);
+        reference.updateChildren(activeStatus);
+    }
+
+    private void currentUser(String userId){
+        SharedPreferences.Editor editor = getSharedPreferences("preference", MODE_PRIVATE).edit();
+        editor.putString("currentUser", userId);
+        editor.apply();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         updateActiveStatus("online");
+        currentUser(userId);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         updateActiveStatus("offline");
+        currentUser(userId);
+
     }
 }

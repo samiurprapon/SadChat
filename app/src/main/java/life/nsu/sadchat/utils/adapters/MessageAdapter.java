@@ -33,29 +33,24 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     FirebaseUser firebaseUser;
 
-    public MessageAdapter(Context context) {
+    public MessageAdapter(Context context, List<Chat> chatList, User user) {
         this.chatList = chatList;
         this.context = context;
-    }
-
-    public void setChatList(List<Chat> chatList) {
-        this.chatList = chatList;
-    }
-
-    public void setUser(User user) {
         this.user = user;
     }
 
     @NonNull
     @Override
     public MessageAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view;
         if (viewType == MSG_TYPE_RIGHT) {
-            View view = LayoutInflater.from(context).inflate(R.layout.item_sender_message, parent, false);
-            return new MessageAdapter.ViewHolder(view);
+            view = LayoutInflater.from(context).inflate(R.layout.item_sender_message, parent, false);
         } else {
-            View view = LayoutInflater.from(context).inflate(R.layout.item_receiver_message, parent, false);
-            return new MessageAdapter.ViewHolder(view);
+            view = LayoutInflater.from(context).inflate(R.layout.item_receiver_message, parent, false);
         }
+
+        return new MessageAdapter.ViewHolder(view);
+
     }
 
     @Override
@@ -71,7 +66,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         if (user.getImage().equals("default")) {
             holder.mProfilePicture.setImageResource(R.drawable.ic_profile_avatar);
         } else {
-
             Glide.with(context)
                     .load(user.getBitmap())
                     .placeholder(R.drawable.ic_profile_avatar)
@@ -81,9 +75,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
         if (position == chatList.size() - 1) {
             if (chat.isSeen()) {
-                holder.mMessageSeen.setText("Seen");
+                holder.mMessageSeen.setText("seen");
             } else {
-                holder.mMessageSeen.setText("Delivered");
+                holder.mMessageSeen.setText("delivered");
             }
         } else {
             holder.mMessageSeen.setVisibility(View.GONE);

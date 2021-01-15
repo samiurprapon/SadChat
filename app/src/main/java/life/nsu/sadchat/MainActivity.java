@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        mProfilePicture =  findViewById(R.id.ci_profile_picture);
+        mProfilePicture = findViewById(R.id.ci_profile_picture);
         mUsername = findViewById(R.id.tv_username);
 
         final TabLayout tabLayout = findViewById(R.id.tab_layout);
@@ -84,9 +84,9 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
 
                 mUsername.setText(user.getUsername());
 
-                if (user.getImage() != null &&!user.getImage().equals("default")){
+                if (user.getImage() != null && !user.getImage().equals("default")) {
 
-                    Glide.with(MainActivity.this)
+                    Glide.with(getApplicationContext())
                             .load(user.getBitmap())
                             .placeholder(R.drawable.ic_profile_avatar)
                             .circleCrop()
@@ -110,18 +110,18 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
 
                 int unread = 0;
 
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Chat chat = snapshot.getValue(Chat.class);
 
-                    if (chat.getReceiver().equals(firebaseUser.getUid()) && !chat.isSeen()){
+                    if (chat.getReceiver().equals(firebaseUser.getUid()) && !chat.isSeen()) {
                         unread++;
                     }
                 }
 
-                if (unread == 0){
+                if (unread == 0) {
                     adapter.addFragment(ChatFragment.newInstance(onItemClick), "Chats");
                 } else {
-                    adapter.addFragment(ChatFragment.newInstance(onItemClick), "("+unread+") "+ "Chats");
+                    adapter.addFragment(ChatFragment.newInstance(onItemClick), "(" + unread + ") " + "Chats");
                 }
 
                 adapter.addFragment(ContactsFragment.newInstance(onItemClick), "Users");
@@ -131,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
 
                 tabLayout.setupWithViewPager(viewPager);
 
-                if(dialog != null) {
+                if (dialog != null) {
                     dialog.hide();
                 }
 
@@ -157,9 +157,9 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
 
     @Override
     public void onItemClick(String id, View v) {
-        ViewProfileActivity viewProfileActivity = ViewProfileActivity.newInstance(id,this);
+        ViewProfileActivity viewProfileActivity = ViewProfileActivity.newInstance(id, this);
 
-        viewProfileActivity.show(getSupportFragmentManager(), "view_profile");
+        viewProfileActivity.show(getSupportFragmentManager(), "viewProfile");
     }
 
     @Override

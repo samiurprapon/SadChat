@@ -1,6 +1,7 @@
 package life.nsu.sadchat.utils.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
@@ -11,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -22,8 +24,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
+import java.util.List;
 
+import life.nsu.sadchat.MessagingActivity;
 import life.nsu.sadchat.R;
 import life.nsu.sadchat.models.Chat;
 import life.nsu.sadchat.models.User;
@@ -32,32 +35,25 @@ import life.nsu.sadchat.utils.OnItemClickListener;
 public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHolder> {
 
     Context context;
+    List<User> contactList;
 
-    private ArrayList<User> contactList;
-
-    private boolean isChat;
+    boolean isChat;
     private String theLastMessage;
 
     OnItemClickListener onItemClickListener;
 
-    public ContactAdapter(Context context) {
-        this.context = context;
-    }
-
-    public ContactAdapter(Context context, ArrayList<User> contactList, OnItemClickListener onItemClick, boolean isChat) {
+    public ContactAdapter(Context context, List<User> contactList, OnItemClickListener onItemClick, boolean isChat) {
         this.context = context;
         this.contactList = contactList;
         this.isChat = isChat;
         this.onItemClickListener = onItemClick;
-
-        notifyDataSetChanged();
     }
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ContactAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.item_contact, parent, false);
-        return new ViewHolder(view);
+        return new ContactAdapter.ViewHolder(view);
     }
 
     @Override
@@ -68,7 +64,11 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
 
         if (isChat) {
             lastMessage(user.getId(), holder.mLastText);
+        } else {
+            holder.mLastText.setVisibility(View.GONE);
+        }
 
+        if (isChat) {
             if (user.getActiveStatus().equals("online")) {
                 holder.mActive.setVisibility(View.VISIBLE);
                 holder.mUnActive.setVisibility(View.GONE);
@@ -79,8 +79,6 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
             }
 
         } else {
-            holder.mLastText.setVisibility(View.GONE);
-
             holder.mActive.setVisibility(View.GONE);
             holder.mUnActive.setVisibility(View.GONE);
         }
@@ -99,6 +97,15 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
             @Override
             public void onClick(View v) {
                 onItemClickListener.onItemClick(user.getId(), v);
+            }
+        });
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, MessagingActivity.class);
+                intent.putExtra("userId", user.getId());
+                context.startActivity(intent);
             }
         });
     }
@@ -121,6 +128,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         ImageView mActive;
         ImageView mUnActive;
         TextView mLastText;
+        CardView mItemView;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -130,6 +138,8 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
             mActive = itemView.findViewById(R.id.img_on);
             mUnActive = itemView.findViewById(R.id.img_off);
             mLastText = itemView.findViewById(R.id.last_msg);
+            mItemView = itemView.findViewById(R.id.cv_contact_item);
+
         }
     }
 

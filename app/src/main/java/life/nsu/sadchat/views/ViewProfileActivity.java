@@ -35,7 +35,7 @@ public class ViewProfileActivity extends BottomSheetDialogFragment {
     ImageView mProfilePicture;
 
     @SuppressLint("StaticFieldLeak")
-    private static Context mContext;
+    private static Context context;
 
     public ViewProfileActivity() {
 
@@ -44,10 +44,11 @@ public class ViewProfileActivity extends BottomSheetDialogFragment {
     public static ViewProfileActivity newInstance(String uid, Context context) {
         Bundle args = new Bundle();
         args.putString("uid", uid);
-        mContext = context;
-        ViewProfileActivity fragment = new ViewProfileActivity();
-        fragment.setArguments(args);
-        return fragment;
+
+        ViewProfileActivity.context = context;
+        ViewProfileActivity activity = new ViewProfileActivity();
+        activity.setArguments(args);
+        return activity;
     }
 
     @Nullable
@@ -56,13 +57,13 @@ public class ViewProfileActivity extends BottomSheetDialogFragment {
         View view = inflater.inflate(R.layout.activity_view_profile, container, false);
 
         if (getArguments() != null) {
-
-            uid = getArguments().getString("uid");
             mProfilePicture = view.findViewById(R.id.ci_profile_image);
             mUsername = view.findViewById(R.id.tv_username);
             mBio = view.findViewById(R.id.et_bio);
 
+            uid = getArguments().getString("uid");
             reference = FirebaseDatabase.getInstance().getReference("users").child(uid);
+
             reference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -74,7 +75,7 @@ public class ViewProfileActivity extends BottomSheetDialogFragment {
                     if (user.getImage().equals("default")) {
                         mProfilePicture.setImageResource(R.drawable.ic_profile_avatar);
                     } else {
-                        Glide.with(mContext)
+                        Glide.with(context)
                                 .load(getBitmap(user.getImage()))
                                 .placeholder(R.drawable.ic_profile_avatar)
                                 .circleCrop()

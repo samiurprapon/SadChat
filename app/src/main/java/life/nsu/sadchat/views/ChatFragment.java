@@ -2,13 +2,13 @@ package life.nsu.sadchat.views;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import life.nsu.sadchat.R;
-import life.nsu.sadchat.models.ChatItem;
+import life.nsu.sadchat.models.ChatList;
 import life.nsu.sadchat.models.Token;
 import life.nsu.sadchat.models.User;
 import life.nsu.sadchat.utils.OnItemClickListener;
@@ -43,8 +43,8 @@ public class ChatFragment extends Fragment {
     DatabaseReference reference;
     ContactAdapter adapter;
 
-    private List<ChatItem> chatItems;
-    private ArrayList<User> userList;
+    private List<ChatList> chatLists;
+    private List<User> userList;
 
     FrameLayout frameLayout;
     RecyclerView recyclerView;
@@ -56,11 +56,14 @@ public class ChatFragment extends Fragment {
     }
 
     public static ChatFragment newInstance(OnItemClickListener onItemClick) {
-        if(fragment == null) {
-            fragment = new ChatFragment();
-        }
+        Bundle args = new Bundle();
 
         onItemClickListener = onItemClick;
+
+        if(fragment == null) {
+            fragment = new ChatFragment();
+            fragment.setArguments(args);
+        }
 
         return fragment;
     }
@@ -69,39 +72,36 @@ public class ChatFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_chat, container, false);
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        View view = inflater.inflate(R.layout.fragment_chat, container, false);
 
         recyclerView = view.findViewById(R.id.recycler_view);
         frameLayout = view.findViewById(R.id.lt_empty_layout);
 
-        chatItems = new ArrayList<>();
-
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(linearLayoutManager);
+
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
         recyclerView.addItemDecoration(dividerItemDecoration);
 
-        reference = FirebaseDatabase.getInstance().getReference("chatsList").child(firebaseUser.getUid());
+        chatLists = new ArrayList<>();
+
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        reference = FirebaseDatabase.getInstance().getReference("chatList").child(firebaseUser.getUid());
 
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                chatItems.clear();
+                chatLists.clear();
 
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    ChatItem chatItem = snapshot.getValue(ChatItem.class);
+                    ChatList chatList = snapshot.getValue(ChatList.class);
 
-                    chatItems.add(chatItem);
+                    chatLists.add(chatList);
                 }
 
-                if (chatItems.size() == 0) {
+                if (chatLists.size() == 0) {
                     frameLayout.setVisibility(View.VISIBLE);
                 } else {
                     frameLayout.setVisibility(View.GONE);
@@ -117,7 +117,11 @@ public class ChatFragment extends Fragment {
         });
 
         updateToken(FirebaseInstanceId.getInstance().getToken());
+
+        return  view;
     }
+
+
 
     private void updateToken(String tokenString){
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("tokens");
@@ -139,7 +143,7 @@ public class ChatFragment extends Fragment {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     User user = snapshot.getValue(User.class);
 
-                    for (ChatItem chatList : chatItems) {
+                    for (ChatList chatList : chatLists) {
                         if (user != null && user.getId() != null && chatList != null && chatList.getId() != null && user.getId().equals(chatList.getId())) {
                             userList.add(user);
                         }

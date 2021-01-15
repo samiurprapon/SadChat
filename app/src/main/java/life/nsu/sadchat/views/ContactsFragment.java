@@ -27,6 +27,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import life.nsu.sadchat.R;
 import life.nsu.sadchat.models.User;
@@ -38,7 +39,7 @@ public class ContactsFragment extends Fragment {
     @SuppressLint("StaticFieldLeak")
     private static ContactsFragment fragment = null;
 
-    private ArrayList<User> contactList;
+    private List<User> contactList;
     private ContactAdapter adapter;
 
     FrameLayout frameLayout;
@@ -80,6 +81,7 @@ public class ContactsFragment extends Fragment {
 
         readUsers();
 
+        recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL));
 
@@ -103,11 +105,10 @@ public class ContactsFragment extends Fragment {
 
 
     private void searchUsers(String s) {
-
         final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        Query query = FirebaseDatabase.getInstance().getReference("users").orderByChild("username")
-                .startAt(s)
-                .endAt(s + "\uf8ff");
+        Query query = FirebaseDatabase.getInstance().getReference("users").orderByChild("username".toLowerCase())
+                .startAt(s.toLowerCase())
+                .endAt(s.toLowerCase() + "\uf8ff");
 
         query.addValueEventListener(new ValueEventListener() {
             @Override
@@ -143,6 +144,7 @@ public class ContactsFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (mSearch.getText().toString().equals("")) {
                     contactList.clear();
+
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         User user = snapshot.getValue(User.class);
 
