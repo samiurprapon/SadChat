@@ -1,9 +1,13 @@
 # SadChat
 
-  >*Sad Chat is a real time one to one chat application with Push Notifications.*
+
+<img src="https://raw.githubusercontent.com/samiurprapon/SadChat/main/app/src/main/ic_launcher-playstore.png" width="80">
+
+Sad Chat is a real time one to one chat application with Push Notifications.
 
 
 ## Features
+------
 - [x] User  can create own profile
 - [ ] Push Notification
 - [x] Authentication with phone number
@@ -17,9 +21,11 @@
 - [x] User can not take screenshot
 
 ## Platform
+------
 Runs on `Android`
 
 ## Execution 
+------
 1)  Install `Android Studio`
 2)  Download [APK](https://github.com/samiurprapon/SadChat/releases).  (later)
 3)  Open `Android Studio` and run
@@ -27,6 +33,7 @@ Runs on `Android`
 Package name will be the `.apk` file name
 
 ## Build and Installation
+------
 1) clone this repository 
 ```
 git clone https://github.com/samiurprapon/SadChat.git
@@ -35,17 +42,21 @@ git clone https://github.com/samiurprapon/SadChat.git
 3) Run
 
 ## Programming Languages 
+------
 > Java, XML
 
 ## Tools/framework
+------
 > Android Studio
 > Firebase
 
 ## References
+------
 > N/A
 
 
 ### Team Information
+------
 ```
 Author          :   Samiur Rahman Prapon,
                     ID # 1712666642

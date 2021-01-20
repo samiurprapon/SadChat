@@ -2,7 +2,6 @@ package life.nsu.sadchat;
 
 import android.os.Bundle;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -50,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // prevent screenshot
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
 
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         setContentView(R.layout.activity_main);
@@ -71,12 +70,9 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         final TabLayout tabLayout = findViewById(R.id.tab_layout);
         final ViewPager viewPager = findViewById(R.id.view_pager);
 
-        mProfilePicture.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                TabLayout.Tab tab = tabLayout.getTabAt(2);
-                tab.select();
-            }
+        mProfilePicture.setOnClickListener(view -> {
+            TabLayout.Tab tab = tabLayout.getTabAt(2);
+            tab.select();
         });
 
         reference = FirebaseDatabase.getInstance().getReference("users").child(firebaseUser.getUid());

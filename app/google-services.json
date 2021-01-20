@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "767781983363",
+    "firebase_url": "https://project-sadchat-default-rtdb.firebaseio.com",
     "project_id": "project-sadchat",
     "storage_bucket": "project-sadchat.appspot.com"
   },
@@ -13,6 +14,14 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "767781983363-q388lm2bej5chnbrgh1dtcksj43h48mn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "life.nsu.sadchat",
+            "certificate_hash": "3f0b1a70823cf490292c5aa92a41465aea24b23f"
+          }
+        },
         {
           "client_id": "767781983363-sm4k72dspc8jnj7r1fntfrosk73hvi88.apps.googleusercontent.com",
           "client_type": 3
