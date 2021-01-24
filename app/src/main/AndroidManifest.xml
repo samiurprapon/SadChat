@@ -15,7 +15,7 @@
         android:configChanges="orientation|screenSize">
 
         <service
-            android:name="life.nsu.sadchat.utils.fcm.MyFirebaseIdService"
+            android:name="life.nsu.sadchat.utils.fcm.MyFirebasePushMessagingService"
             android:enabled="true"
             android:exported="false">
             <intent-filter>

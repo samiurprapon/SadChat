@@ -27,7 +27,7 @@ import java.util.List;
 
 import life.nsu.sadchat.R;
 import life.nsu.sadchat.models.ChatList;
-import life.nsu.sadchat.models.Token;
+import life.nsu.sadchat.utils.fcm.Token;
 import life.nsu.sadchat.models.User;
 import life.nsu.sadchat.utils.OnItemClickListener;
 import life.nsu.sadchat.utils.adapters.ContactAdapter;

@@ -1,4 +1,4 @@
-package life.nsu.sadchat.models;
+package life.nsu.sadchat.utils.fcm;
 
 
 public class Token {
