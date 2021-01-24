@@ -16,7 +16,7 @@ Sad Chat is a real time one to one chat application with Push Notifications.
 - [x] User can view all user and can communicate with everyone
 - [ ] User can see active status
 - [ ] User can send image
-- [ ] User can seen seen status
+- [x] User can seen seen status
 - [ ] User can deactivate account
 - [x] User can not take screenshot
 

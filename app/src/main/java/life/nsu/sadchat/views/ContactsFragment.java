@@ -106,7 +106,8 @@ public class ContactsFragment extends Fragment {
 
     private void searchUsers(String s) {
         final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        Query query = FirebaseDatabase.getInstance().getReference("users").orderByChild("username".toLowerCase())
+
+        Query query = FirebaseDatabase.getInstance().getReference("users").orderByChild("username")
                 .startAt(s.toLowerCase())
                 .endAt(s.toLowerCase() + "\uf8ff");
 
@@ -121,6 +122,12 @@ public class ContactsFragment extends Fragment {
                     if (user != null && user.getId() != null && firebaseUser != null && !user.getId().equals(firebaseUser.getUid())) {
                         contactList.add(user);
                     }
+                }
+
+                if (contactList.size() == 0) {
+                    frameLayout.setVisibility(View.VISIBLE);
+                } else {
+                    frameLayout.setVisibility(View.GONE);
                 }
 
                 adapter = new ContactAdapter(getContext(), contactList, onItemClickListener, false);

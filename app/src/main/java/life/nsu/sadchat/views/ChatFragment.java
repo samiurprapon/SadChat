@@ -2,7 +2,6 @@ package life.nsu.sadchat.views;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -144,7 +143,8 @@ public class ChatFragment extends Fragment {
                     User user = snapshot.getValue(User.class);
 
                     for (ChatList chatList : chatLists) {
-                        if (user != null && user.getId() != null && chatList != null && chatList.getId() != null && user.getId().equals(chatList.getId())) {
+                        if (user != null && user.getId() != null && chatList != null &&
+                                chatList.getId() != null && user.getId().equals(chatList.getId())) {
                             userList.add(user);
                         }
                     }

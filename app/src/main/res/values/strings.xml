@@ -4,23 +4,25 @@
     <!--    Login  page -->
     <string name="title_welcome_back">Welcome back,</string>
     <string name="title_sign_in_to_continue">sign in to continue…</string>
-    <string name="phone_number_hint">01X XXX XXXXX</string>
+    <string name="phone_number_hint">01X XXX XXXIX</string>
     <string name="title_login">Login</string>
     <string name="placeholder_country_code">+88</string>
     <string name="hint_otp">0 1 2 4 5 6</string>
     <string name="title_complete">Complete</string>
     <string name="title_name">Name</string>
-    <string name="hint_bio">Your bio can be of 60 words...</string>
+    <string name="hint_bio">Your bio can be of 60 words…</string>
     <string name="bio">Bio</string>
     <string name="placeholder_username">Username</string>
 
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="tab_chats">Chat</string>
     <string name="tab_contacts">Contacts</string>
     <string name="tab_profile">Profile</string>
     <string name="title_update">Update</string>
     <string name="title_last_text">no messages</string>
-    <string name="hint_search_user_by_name">Search user by name...</string>
-    <string name="type_a_message">Type a message...</string>
+    <string name="hint_search_user_by_name">Search user by name…</string>
+    <string name="type_a_message">Type a message…</string>
+    <string name="seen_status">seen</string>
+    <string name="delivered_status">delivered</string>
+
 
 </resources>

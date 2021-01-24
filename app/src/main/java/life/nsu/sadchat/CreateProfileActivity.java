@@ -8,23 +8,17 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
-import android.view.View;
 import android.view.WindowManager;
 import android.webkit.MimeTypeMap;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.content.ContextCompat;
 
-import com.google.android.gms.tasks.Continuation;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -54,7 +48,6 @@ public class CreateProfileActivity extends AppCompatActivity {
     ImageView mChangeImage;
     AppCompatButton mComplete;
 
-    DatabaseReference reference;
     StorageReference storageReference;
     StorageTask<UploadTask.TaskSnapshot> uploadTask;
 
@@ -78,23 +71,17 @@ public class CreateProfileActivity extends AppCompatActivity {
 
         imageUrl = "default";
 
-        mChangeImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (ContextCompat.checkSelfPermission(CreateProfileActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                    chooseImageFromGallery();
-                } else {
-                    requestPermission();
-                }
+        mChangeImage.setOnClickListener(v -> {
+            if (ContextCompat.checkSelfPermission(CreateProfileActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                chooseImageFromGallery();
+            } else {
+                requestPermission();
             }
         });
 
-        mComplete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isValid()) {
-                    syncData();
-                }
+        mComplete.setOnClickListener(v -> {
+            if (isValid()) {
+                syncData();
             }
         });
     }
@@ -110,30 +97,19 @@ public class CreateProfileActivity extends AppCompatActivity {
 
         uploadTask = fileReference.putFile(imageUri);
 
-        uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-            @Override
-            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                if (!task.isSuccessful()){
-                    throw  task.getException();
-                }
+        uploadTask.continueWithTask(task -> {
+            if (!task.isSuccessful()){
+                throw  task.getException();
+            }
 
-                return  fileReference.getDownloadUrl();
+            return  fileReference.getDownloadUrl();
+        }).addOnCompleteListener(task -> {
+            if (task.isSuccessful()){
+                imageUrl = task.getResult().toString();
+            } else {
+                Toast.makeText(getApplicationContext(), "Failed!", Toast.LENGTH_SHORT).show();
             }
-        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-            @Override
-            public void onComplete(@NonNull Task<Uri> task) {
-                if (task.isSuccessful()){
-                    imageUrl = task.getResult().toString();
-                } else {
-                    Toast.makeText(getApplicationContext(), "Failed!", Toast.LENGTH_SHORT).show();
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+        }).addOnFailureListener(e -> Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
     private String getFileExtension(Uri uri){
@@ -161,12 +137,9 @@ public class CreateProfileActivity extends AppCompatActivity {
             userInformation.put("bio", bio);
         }
 
-        reference.setValue(userInformation).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isComplete()) {
-                    route();
-                }
+        reference.setValue(userInformation).addOnCompleteListener(task -> {
+            if (task.isComplete()) {
+                route();
             }
         });
 

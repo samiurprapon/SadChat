@@ -1,5 +1,6 @@
 package life.nsu.sadchat.utils.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,7 +50,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             view = LayoutInflater.from(context).inflate(R.layout.item_receiver_message, parent, false);
         }
 
-        return new MessageAdapter.ViewHolder(view);
+        return new ViewHolder(view);
 
     }
 
@@ -74,10 +75,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         }
 
         if (position == chatList.size() - 1) {
-            if (chat.isSeen()) {
-                holder.mMessageSeen.setText("seen");
+//            Toast.makeText(context, ""+chat.isIsSeen()+"\n"+chat.getMessage(), Toast.LENGTH_SHORT).show();
+            holder.mMessageSeen.setVisibility(View.VISIBLE);
+
+            if (chat.isIsSeen()) {
+                holder.mMessageSeen.setText(R.string.seen_status);
             } else {
-                holder.mMessageSeen.setText("delivered");
+                holder.mMessageSeen.setText(R.string.delivered_status);
             }
         } else {
             holder.mMessageSeen.setVisibility(View.GONE);
@@ -90,7 +94,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         return chatList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
 
         public TextView mShowMessage;
         public ImageView mProfilePicture;
@@ -107,9 +111,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         }
 
         public String convertTime(String time) {
-            SimpleDateFormat formatter = new SimpleDateFormat("h:mm a");
-            String dateString = formatter.format(new Date(Long.parseLong(time)));
-            return dateString;
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat("h:mm a");
+            return formatter.format(new Date(Long.parseLong(time)));
         }
     }
 
