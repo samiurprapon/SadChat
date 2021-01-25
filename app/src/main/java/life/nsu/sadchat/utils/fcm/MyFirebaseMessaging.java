@@ -29,7 +29,7 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
 
-        Log.d("FIREBASE_RESPONSE", "Message data payload: " + remoteMessage.getData());
+//        Log.d("FIREBASE_RESPONSE", "Message data payload: " + remoteMessage.getData());
 
         String receiver = remoteMessage.getData().get("receiver");
         String user = remoteMessage.getData().get("user");

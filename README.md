@@ -9,12 +9,12 @@ Sad Chat is a real time one to one chat application with Push Notifications.
 ## Features
 ------
 - [x] User  can create own profile
-- [ ] Push Notification
+- [x] Push Notification
 - [x] Authentication with phone number
 - [x] User will have his own profile
 - [x] User can add profile picture
 - [x] User can view all user and can communicate with everyone
-- [ ] User can see active status
+- [x] User can see active status
 - [ ] User can send image
 - [x] User can seen seen status
 - [ ] User can deactivate account

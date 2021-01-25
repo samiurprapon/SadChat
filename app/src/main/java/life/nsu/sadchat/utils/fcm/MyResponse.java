@@ -1,7 +1,5 @@
 package life.nsu.sadchat.utils.fcm;
 
-import java.util.Arrays;
-
 public class MyResponse {
 
     private int success;
@@ -37,22 +35,22 @@ public class MyResponse {
             return message_id;
         }
 
-        @Override
-        public String toString() {
-            return "Results{" +
-                    "message_id='" + message_id + '\'' +
-                    '}';
-        }
+//        @Override
+//        public String toString() {
+//            return "Results{" +
+//                    "message_id='" + message_id + '\'' +
+//                    '}';
+//        }
     }
 
-    @Override
-    public String toString() {
-        return "MyResponse{" +
-                "success=" + success +
-                ", failure=" + failure +
-                ", multicast_id='" + multicast_id + '\'' +
-                ", canonical_ids=" + canonical_ids +
-                ", results=" + Arrays.toString(results) +
-                '}';
-    }
+//    @Override
+//    public String toString() {
+//        return "MyResponse{" +
+//                "success=" + success +
+//                ", failure=" + failure +
+//                ", multicast_id='" + multicast_id + '\'' +
+//                ", canonical_ids=" + canonical_ids +
+//                ", results=" + Arrays.toString(results) +
+//                '}';
+//    }
 }

@@ -2,7 +2,6 @@ package life.nsu.sadchat;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -286,16 +285,16 @@ public class MessagingActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(@NonNull Call<MyResponse> call, @NonNull Response<MyResponse> response) {
 
-                            if (response.code() == 200 && response.body() != null) {
-                                MyResponse response1 = response.body();
-                                Log.d("FIREBASE_RESP_Success", response1.toString());
-
-                            }
+//                            if (response.code() == 200 && response.body() != null) {
+////                                MyResponse response1 = response.body();
+////                                Log.d("FIREBASE_RESP_Success", response1.toString());
+//
+//                            }
                         }
 
                         @Override
                         public void onFailure(@NonNull Call<MyResponse> call, @NonNull Throwable t) {
-                            Log.d("FIREBASE_RESP_fail", t.getMessage());
+//                            Log.d("FIREBASE_RESP_fail", t.getMessage());
 
                         }
                     });
