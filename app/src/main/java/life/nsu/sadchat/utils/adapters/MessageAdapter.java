@@ -54,6 +54,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull MessageAdapter.ViewHolder holder, int position) {
         Chat chat = chatList.get(position);
@@ -79,7 +80,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             holder.mMessageSeen.setVisibility(View.VISIBLE);
 
             if (chat.isIsSeen()) {
-                holder.mMessageSeen.setText(R.string.seen_status);
+                holder.mMessageSeen.setText("seen"+" at "+holder.convertTime(chat.getSeenTime()));
             } else {
                 holder.mMessageSeen.setText(R.string.delivered_status);
             }

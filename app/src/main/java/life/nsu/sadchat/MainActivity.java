@@ -1,5 +1,6 @@
 package life.nsu.sadchat;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
     private CustomLoader dialog;
 
     OnItemClickListener onItemClick;
+    ValueEventListener valueEventListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
 
         reference = FirebaseDatabase.getInstance().getReference("users").child(firebaseUser.getUid());
 
-        reference.addValueEventListener(new ValueEventListener() {
+        valueEventListener = reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
@@ -172,6 +174,18 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
     protected void onPause() {
         super.onPause();
         updateActiveStatus("offline");
+        if(reference != null && valueEventListener != null) {
+            reference.removeEventListener(valueEventListener);
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if (reference != null && valueEventListener != null) {
+            reference.removeEventListener(valueEventListener);
+        }
     }
 
 }

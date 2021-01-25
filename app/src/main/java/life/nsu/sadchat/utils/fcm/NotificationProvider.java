@@ -13,7 +13,7 @@ import android.os.Build;
 public class NotificationProvider extends ContextWrapper {
 
     private static final String CHANNEL_ID = "life.nsu.sadchat";
-    private static final String CHANNEL_NAME = "sadChat";
+    private static final String CHANNEL_NAME = "sadchat";
 
     private NotificationManager notificationManager;
 
@@ -44,7 +44,8 @@ public class NotificationProvider extends ContextWrapper {
     }
 
     @TargetApi(Build.VERSION_CODES.O)
-    public Notification.Builder getNotificationProvider(String title, String body, PendingIntent pendingIntent, Uri soundUri, String icon) {
+    public Notification.Builder getNotificationProvider(String title, String body,
+                                                        PendingIntent pendingIntent, Uri soundUri, String icon) {
         return new Notification.Builder(getApplicationContext(), CHANNEL_ID)
                 .setContentIntent(pendingIntent)
                 .setContentTitle(title)

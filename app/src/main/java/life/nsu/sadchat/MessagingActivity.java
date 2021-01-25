@@ -2,7 +2,7 @@ package life.nsu.sadchat;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
+import android.util.Log;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -22,6 +22,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -32,6 +33,15 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import life.nsu.sadchat.models.Chat;
 import life.nsu.sadchat.models.User;
 import life.nsu.sadchat.utils.adapters.MessageAdapter;
+import life.nsu.sadchat.utils.fcm.Client;
+import life.nsu.sadchat.utils.fcm.MyResponse;
+import life.nsu.sadchat.utils.fcm.Notification;
+import life.nsu.sadchat.utils.fcm.NotificationService;
+import life.nsu.sadchat.utils.fcm.Sender;
+import life.nsu.sadchat.utils.fcm.Token;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MessagingActivity extends AppCompatActivity {
 
@@ -47,8 +57,12 @@ public class MessagingActivity extends AppCompatActivity {
     MessageAdapter adapter;
     List<Chat> chats;
 
-    String userId;
     ValueEventListener seenListener;
+    NotificationService service;
+
+    private String userId;
+    private boolean isNotify = false;
+//    SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,19 +73,17 @@ public class MessagingActivity extends AppCompatActivity {
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         setContentView(R.layout.activity_messaging);
 
+//        preferences = getSharedPreferences("personal", MODE_PRIVATE);
+//        String imageUrl = preferences.getString("profile", "https://i.imgur.com/3ENZDMZ.jpeg");
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-              onBackPressed();
-            }
-        });
+        toolbar.setNavigationOnClickListener(view -> onBackPressed());
 
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        service = Client.getInstance("https://fcm.googleapis.com/").create(NotificationService.class);
 
         if (getIntent() != null) {
             userId = getIntent().getStringExtra("userId");
@@ -89,23 +101,23 @@ public class MessagingActivity extends AppCompatActivity {
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        mSend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //ToDo
-                // add notification here
-                String message = mTextMessage.getText().toString();
-                String time = String.valueOf(System.currentTimeMillis());
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-                if (!message.equals("")) {
-                    sendMessage(firebaseUser.getUid(), userId, message, time);
+        mSend.setOnClickListener(view -> {
+            isNotify = true;
 
-                    // clear message box
-                    mTextMessage.setText("");
-                } else {
-                    Toast.makeText(MessagingActivity.this, "You can't send empty message", Toast.LENGTH_SHORT).show();
-                }
+            String message = mTextMessage.getText().toString();
+            String time = String.valueOf(System.currentTimeMillis());
+
+            if (!message.equals("")) {
+                sendMessage(firebaseUser.getUid(), userId, message, time);
+
+                // clear message box
+                mTextMessage.setText("");
+            } else {
+                Toast.makeText(MessagingActivity.this, "You can't send empty message", Toast.LENGTH_SHORT).show();
             }
+
         });
 
         reference = FirebaseDatabase.getInstance().getReference("users").child(userId);
@@ -116,7 +128,8 @@ public class MessagingActivity extends AppCompatActivity {
                 User user = dataSnapshot.getValue(User.class);
 
                 mUsername.setText(user.getUsername());
-                if (user.getImage() == null || user.getImage().equals("default") ) {
+
+                if (user.getImage() == null || user.getImage().equals("default")) {
                     mProfilePicture.setImageResource(R.drawable.ic_profile_avatar);
                 } else {
                     Glide.with(getApplicationContext())
@@ -140,6 +153,7 @@ public class MessagingActivity extends AppCompatActivity {
 
     private void seenMessage(final String userId) {
         reference = FirebaseDatabase.getInstance().getReference("chats");
+        String time = String.valueOf(System.currentTimeMillis());
 
         seenListener = reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -150,6 +164,7 @@ public class MessagingActivity extends AppCompatActivity {
                     if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userId)) {
                         HashMap<String, Object> hashMap = new HashMap<>();
                         hashMap.put("isSeen", true);
+                        hashMap.put("seenTime", time);
                         snapshot.getRef().updateChildren(hashMap);
                     }
                 }
@@ -176,7 +191,6 @@ public class MessagingActivity extends AppCompatActivity {
 
         reference.child("chats").push().setValue(hashMap);
 
-
         // add user to chat fragment
         DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("chatList")
                 .child(firebaseUser.getUid())
@@ -201,9 +215,8 @@ public class MessagingActivity extends AppCompatActivity {
                 .child(firebaseUser.getUid());
         chatRefReceiver.child("id").setValue(firebaseUser.getUid());
 
-        //TODO
-        // for notification purpose
-        String encryptedMessage = message;
+        // later encrypt the message here
+        final String encryptedMessage = message;
 
         reference = FirebaseDatabase.getInstance().getReference("users").child(firebaseUser.getUid());
 
@@ -211,8 +224,12 @@ public class MessagingActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
-                //TODO
-                // for notification
+
+                if (isNotify) {
+                    sendNotification(receiver, user.getUsername(), encryptedMessage);
+                }
+
+                isNotify = false;
             }
 
             @Override
@@ -226,6 +243,7 @@ public class MessagingActivity extends AppCompatActivity {
         chats = new ArrayList<>();
 
         reference = FirebaseDatabase.getInstance().getReference("chats");
+
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -251,6 +269,48 @@ public class MessagingActivity extends AppCompatActivity {
     }
 
 
+    private void sendNotification(String receiver, final String username, final String message) {
+        DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("tokens");
+        Query query = tokens.orderByKey().equalTo(receiver);
+
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Token token = snapshot.getValue(Token.class);
+
+                    Notification notification = new Notification(firebaseUser.getUid(), R.drawable.ic_profile_avatar, username + ": " + message, "New Message", userId);
+                    Sender sender = new Sender(notification, token.getToken());
+
+                    service.sendNotification(sender).enqueue(new Callback<MyResponse>() {
+                        @Override
+                        public void onResponse(@NonNull Call<MyResponse> call, @NonNull Response<MyResponse> response) {
+
+                            if (response.code() == 200 && response.body() != null) {
+                                MyResponse response1 = response.body();
+                                Log.d("FIREBASE_RESP_Success", response1.toString());
+
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(@NonNull Call<MyResponse> call, @NonNull Throwable t) {
+                            Log.d("FIREBASE_RESP_fail", t.getMessage());
+
+                        }
+                    });
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
     private void updateActiveStatus(String status) {
         reference = FirebaseDatabase.getInstance().getReference("users").child(firebaseUser.getUid());
 
@@ -260,7 +320,7 @@ public class MessagingActivity extends AppCompatActivity {
         reference.updateChildren(activeStatus);
     }
 
-    private void currentUser(String userId){
+    private void currentUser(String userId) {
         SharedPreferences.Editor editor = getSharedPreferences("preference", MODE_PRIVATE).edit();
         editor.putString("currentUser", userId);
         editor.apply();
@@ -276,8 +336,23 @@ public class MessagingActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+
+        if (reference != null && seenListener != null) {
+            reference.removeEventListener(seenListener);
+        }
+
         updateActiveStatus("offline");
         currentUser(userId);
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if (reference != null && seenListener != null) {
+            reference.removeEventListener(seenListener);
+        }
 
     }
 

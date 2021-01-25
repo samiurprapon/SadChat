@@ -1,8 +1,6 @@
 package life.nsu.sadchat.utils.fcm;
 
 
-import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Headers;
@@ -12,10 +10,10 @@ public interface NotificationService {
     @Headers(
             {
                     "Content-Type:application/json",
-                    "Authorization:key=AAAAssNfVIM:APA91bFjF1pmapR_N6-Xi5nso_GGxkBeF0iOq4kQdaxtFSuHjq79LkIqTQybBtQD6JZR8ebL625HTQlIFFXJfdFE06y0gNQqiv5U15KVlD8d138UJKBq_gaYP2cNWNK7s43fjYrAXTod"
+                    "Authorization:key=AAAAssNfVIM:APA91bHrAA0jprZzcu0YNSi-DTymYBkcyH8Q1b4qrxepl8gHYu2A0Atua4HrKT-Fn3D1YV_lNpkT1lTvL88LY1X0CiGl1bd6QGbDGDN643UD3v1TWZEKoH2y2gS_OU6RFF5ItO9GsyfO"
             }
     )
 
     @POST("fcm/send")
-    Call<ResponseBody> sendNotification(@Body RequestBody body);
+    Call<MyResponse> sendNotification(@Body Sender sender);
 }

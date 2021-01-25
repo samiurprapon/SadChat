@@ -24,6 +24,7 @@ public class SplashActivity extends AppCompatActivity {
 
     //    private ProgressBar mProgressBar;
     DatabaseReference reference;
+    ValueEventListener existenceListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,12 +42,7 @@ public class SplashActivity extends AppCompatActivity {
 //        mProgressBar = findViewById(R.id.progressBar);
 
         // pause for 450 milli seconds
-        new Handler(Looper.myLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                initialize();
-            }
-        }, 550);
+        new Handler(Looper.myLooper()).postDelayed(this::initialize, 550);
     }
 
     //  Checking either logged in or a new user
@@ -56,7 +52,7 @@ public class SplashActivity extends AppCompatActivity {
 
             reference = FirebaseDatabase.getInstance().getReference("users").child(FirebaseAuth.getInstance().getUid());
 
-            reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            existenceListener = reference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     User user = snapshot.getValue(User.class);
@@ -66,7 +62,6 @@ public class SplashActivity extends AppCompatActivity {
                         intent = new Intent(SplashActivity.this, CreateProfileActivity.class);
                     } else {
                         intent = new Intent(SplashActivity.this, MainActivity.class);
-
                     }
 
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -86,6 +81,24 @@ public class SplashActivity extends AppCompatActivity {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if(reference != null && existenceListener != null) {
+            reference.removeEventListener(existenceListener);
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if(reference != null && existenceListener != null) {
+            reference.removeEventListener(existenceListener);
         }
     }
 }
