@@ -30,5 +30,5 @@ Sad Chat is a real time one to one chat application with Push Notifications.
 ## Preview
 
 ## License
-This project is licensed under [GPL-3.0 License](https://opensource.org/licenses/GPL-3.0).  
-Copyright (c) 2020 [Samiur Prapon](https://samiurprapon.github.io/).
+This project is licensed under [GPL-2.0 License](https://github.com/samiurprapon/SadChat/blob/main/LICENSE).  
+Copyright (c) 2021 [Samiur Prapon](https://samiurprapon.github.io/).
