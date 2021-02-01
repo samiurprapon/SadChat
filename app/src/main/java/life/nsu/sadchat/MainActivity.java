@@ -1,7 +1,12 @@
 package life.nsu.sadchat;
 
-import android.content.SharedPreferences;
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -21,6 +26,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import life.nsu.sadchat.models.Chat;
@@ -60,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("");
+        Objects.requireNonNull(getSupportActionBar()).setTitle("");
 
         dialog = new CustomLoader(this);
 
@@ -74,7 +80,9 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
 
         mProfilePicture.setOnClickListener(view -> {
             TabLayout.Tab tab = tabLayout.getTabAt(2);
-            tab.select();
+            if (tab != null) {
+                tab.select();
+            }
         });
 
         reference = FirebaseDatabase.getInstance().getReference("users").child(firebaseUser.getUid());
@@ -84,9 +92,11 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
 
-                mUsername.setText(user.getUsername());
+                if (user != null) {
+                    mUsername.setText(user.getUsername());
+                }
 
-                if (user.getImage() != null && !user.getImage().equals("default")) {
+                if (user != null && user.getImage() != null && !user.getImage().equals("default")) {
 
                     Glide.with(getApplicationContext())
                             .load(user.getImage())
@@ -115,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Chat chat = snapshot.getValue(Chat.class);
 
-                    if (chat.getReceiver().equals(firebaseUser.getUid()) && !chat.isIsSeen()) {
+                    if (chat != null && chat.getReceiver().equals(firebaseUser.getUid()) && !chat.isIsSeen()) {
                         unread++;
                     }
                 }
@@ -144,8 +154,33 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
 
             }
         });
+    }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.app_menu, menu);
+        return true;
+    }
 
+    @SuppressLint("NonConstantResourceId")
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case  R.id.logout:
+                FirebaseAuth.getInstance().signOut();
+                dialog.show();
+
+                new Handler(Looper.myLooper()).postDelayed(() -> {
+                    dialog.hide();
+                    startActivity(new Intent(MainActivity.this, AuthenticationActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                }, 500);
+                return true;
+            case R.id.settings:
+                // call setting page
+                return false;
+        }
+
+        return false;
     }
 
     private void updateActiveStatus(String status) {

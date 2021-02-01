@@ -22,6 +22,8 @@
     <string name="hint_search_user_by_name">Search user by name…</string>
     <string name="type_a_message">Type a notification…</string>
     <string name="delivered_status">delivered</string>
+    <string name="logout">Logout</string>
+    <string name="settings">Settings</string>
 
 
 </resources>
