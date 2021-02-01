@@ -55,6 +55,8 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
         String title = remoteMessage.getData().get("title");
         String body = remoteMessage.getData().get("body");
 
+        Log.d("USER_ID", user);
+
         Bundle bundle = new Bundle();
         bundle.putString("userId", user);
 

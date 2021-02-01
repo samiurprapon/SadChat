@@ -2,10 +2,7 @@ package life.nsu.sadchat.views;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +33,7 @@ public class ViewProfileActivity extends BottomSheetDialogFragment {
 
     @SuppressLint("StaticFieldLeak")
     private static Context context;
+    private ValueEventListener valueEventListener;
 
     public ViewProfileActivity() {
 
@@ -64,11 +62,12 @@ public class ViewProfileActivity extends BottomSheetDialogFragment {
             uid = getArguments().getString("uid");
             reference = FirebaseDatabase.getInstance().getReference("users").child(uid);
 
-            reference.addValueEventListener(new ValueEventListener() {
+            valueEventListener = reference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     User user = dataSnapshot.getValue(User.class);
 
+                    assert user != null;
                     mUsername.setText(user.getUsername());
                     mBio.setText(user.getBio());
 
@@ -91,5 +90,14 @@ public class ViewProfileActivity extends BottomSheetDialogFragment {
         }
 
         return view;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if(reference != null && valueEventListener != null) {
+            reference.removeEventListener(valueEventListener);
+        }
     }
 }
