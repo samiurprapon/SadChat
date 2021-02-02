@@ -1,7 +1,10 @@
 package life.nsu.sadchat;
 
+import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -27,6 +30,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import life.nsu.sadchat.models.Chat;
@@ -77,7 +81,7 @@ public class MessagingActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("");
+        Objects.requireNonNull(getSupportActionBar()).setTitle("");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         toolbar.setNavigationOnClickListener(view -> onBackPressed());
@@ -126,16 +130,20 @@ public class MessagingActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
 
-                mUsername.setText(user.getUsername());
+                if (user != null) {
+                    mUsername.setText(user.getUsername());
+                }
 
-                if (user.getImage() == null || user.getImage().equals("default")) {
-                    mProfilePicture.setImageResource(R.drawable.ic_profile_avatar);
-                } else {
-                    Glide.with(getApplicationContext())
-                            .load(user.getImage())
-                            .placeholder(R.drawable.ic_profile_avatar)
-                            .circleCrop()
-                            .into(mProfilePicture);
+                if (user != null) {
+                    if (user.getImage() == null || user.getImage().equals("default")) {
+                        mProfilePicture.setImageResource(R.drawable.ic_profile_avatar);
+                    } else {
+                        Glide.with(getApplicationContext())
+                                .load(user.getImage())
+                                .placeholder(R.drawable.ic_profile_avatar)
+                                .circleCrop()
+                                .into(mProfilePicture);
+                    }
                 }
 
                 readMessages(user);
@@ -160,7 +168,7 @@ public class MessagingActivity extends AppCompatActivity {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Chat chat = snapshot.getValue(Chat.class);
 
-                    if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userId)) {
+                    if (chat != null && chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userId)) {
                         HashMap<String, Object> hashMap = new HashMap<>();
                         hashMap.put("isSeen", true);
                         hashMap.put("seenTime", time);
@@ -225,7 +233,9 @@ public class MessagingActivity extends AppCompatActivity {
                 User user = dataSnapshot.getValue(User.class);
 
                 if (isNotify) {
-                    sendNotification(receiver, user.getUsername(), encryptedMessage);
+                    if (user != null) {
+                        sendNotification(receiver, user.getUsername(), encryptedMessage);
+                    }
                 }
 
                 isNotify = false;
@@ -251,7 +261,7 @@ public class MessagingActivity extends AppCompatActivity {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Chat chat = snapshot.getValue(Chat.class);
 
-                    if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(user.getId()) || chat.getReceiver().equals(user.getId()) && chat.getSender().equals(firebaseUser.getUid())) {
+                    if (chat != null && (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(user.getId()) || chat.getReceiver().equals(user.getId()) && chat.getSender().equals(firebaseUser.getUid()))) {
                         chats.add(chat);
                     }
 
@@ -279,7 +289,11 @@ public class MessagingActivity extends AppCompatActivity {
                     Token token = snapshot.getValue(Token.class);
 
                     Notification notification = new Notification(firebaseUser.getUid(), R.drawable.ic_profile_avatar, username + ": " + message, "New Message", userId);
-                    Sender sender = new Sender(notification, token.getToken());
+                    Sender sender = null;
+
+                    if (token != null) {
+                        sender = new Sender(notification, token.getToken());
+                    }
 
                     service.sendNotification(sender).enqueue(new Callback<MyResponse>() {
                         @Override
@@ -323,6 +337,27 @@ public class MessagingActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = getSharedPreferences("preference", MODE_PRIVATE).edit();
         editor.putString("currentUser", userId);
         editor.apply();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.messaging_menu, menu);
+        return true;
+    }
+
+    @SuppressLint("NonConstantResourceId")
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.audio_call:
+                // redirect into audioCalling option
+                return true;
+            case R.id.video_call:
+                // redirect into videoCalling option
+                return false;
+        }
+
+        return false;
     }
 
     @Override

@@ -45,7 +45,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-database:19.6.0'
     implementation 'com.google.firebase:firebase-storage:19.2.1'
     implementation 'com.google.firebase:firebase-messaging:21.0.1'
-    implementation 'com.google.firebase:firebase-core:18.0.1'
+    implementation 'com.google.firebase:firebase-core:18.0.2'
 
 //  browser support for captcha validation
     implementation 'androidx.browser:browser:1.3.0'
@@ -69,5 +69,8 @@ dependencies {
 //  networking client
     implementation 'com.squareup.retrofit2:retrofit:2.7.1'
     implementation 'com.squareup.retrofit2:converter-gson:2.7.1'
+
+//  webRTC library
+    implementation "org.webrtc:google-webrtc:1.0.27771"
 
 }
