@@ -20,7 +20,7 @@ Sad Chat is a real time one to one chat application with Push Notifications.
 
 
 ## Installation 
-0)  Download [V1.0.2 beta](https://github.com/samiurprapon/SadChat/releases/download/v1.0.2/sadchat_v1.0.2_beta.apk) apk from here.
+0)  Download [V1.0.3 beta](https://github.com/samiurprapon/SadChat/releases/download/1.0.3/sadchat_v1.0.3_beta.apk) apk from here.
 1)  Install on your phone. 
 2)  Run `SadChat`
 
