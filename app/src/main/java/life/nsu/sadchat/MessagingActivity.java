@@ -27,6 +27,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import org.jitsi.meet.sdk.JitsiMeet;
+import org.jitsi.meet.sdk.JitsiMeetActivity;
+import org.jitsi.meet.sdk.JitsiMeetConferenceOptions;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -66,6 +72,9 @@ public class MessagingActivity extends AppCompatActivity {
     private String userId;
     private boolean isNotify = false;
 //    SharedPreferences preferences;
+
+    private URL url;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -277,7 +286,6 @@ public class MessagingActivity extends AppCompatActivity {
         });
     }
 
-
     private void sendNotification(String receiver, final String username, final String message) {
         DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("tokens");
         Query query = tokens.orderByKey().equalTo(receiver);
@@ -323,7 +331,6 @@ public class MessagingActivity extends AppCompatActivity {
         });
     }
 
-
     private void updateActiveStatus(String status) {
         reference = FirebaseDatabase.getInstance().getReference("users").child(firebaseUser.getUid());
 
@@ -351,13 +358,84 @@ public class MessagingActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.audio_call:
                 // redirect into audioCalling option
+                voiceCall();
                 return true;
             case R.id.video_call:
                 // redirect into videoCalling option
+                videoCall();
                 return false;
         }
 
         return false;
+    }
+
+    private void initializeJitsi() {
+        try {
+            // When using JaaS, replace "https://meet.jit.si" with the proper serverURL
+            url = new URL("https://meet.jit.si");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        JitsiMeetConferenceOptions options = new JitsiMeetConferenceOptions.Builder()
+                .setServerURL(url)
+                .setWelcomePageEnabled(false)
+                .setFeatureFlag("add-people.enabled", false)
+                .setFeatureFlag("kick-out.enabled", false)
+                .setFeatureFlag("raise-hand.enabled", false)
+                .setFeatureFlag("recording.enabled", false)
+                .setFeatureFlag("meeting-password.enabled", false)
+                .setFeatureFlag("live-streaming.enabled", false)
+                .setFeatureFlag("filmstrip.enabled", false)
+                .setFeatureFlag("meeting-name.enabled", false)
+                .setFeatureFlag("chat.enabled", false)
+                .setFeatureFlag("invite.enabled", false)
+                .setFeatureFlag("overflow-menu.enabled", false)
+                .build();
+
+        JitsiMeet.setDefaultConferenceOptions(options);
+    }
+
+    private void videoCall() {
+        initializeJitsi();
+
+        JitsiMeetConferenceOptions options
+                = new JitsiMeetConferenceOptions.Builder()
+                .setRoom(generateToken())
+                .build();
+
+        JitsiMeetActivity.launch(this, options);
+
+    }
+
+    private String generateToken() {
+        String myUid = FirebaseAuth.getInstance().getUid();
+        String friendUid = userId;
+        String token = "null";
+
+        if (myUid != null) {
+            if(myUid.hashCode() < friendUid.hashCode()) {
+                token = myUid + friendUid;
+            } else {
+                token = friendUid + myUid;
+            }
+        }
+
+        return  token;
+
+    }
+
+    private void voiceCall() {
+        initializeJitsi();
+
+        JitsiMeetConferenceOptions options
+                = new JitsiMeetConferenceOptions.Builder()
+                .setRoom(generateToken())
+                .setAudioOnly(true)
+                .build();
+
+        JitsiMeetActivity.launch(this, options);
+
     }
 
     @Override
