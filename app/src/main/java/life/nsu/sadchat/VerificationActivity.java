@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -13,10 +11,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthOptions;
@@ -58,20 +53,17 @@ public class VerificationActivity extends AppCompatActivity {
 
         request(phoneNumber);
 
-        mVerify.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String code = mVerificationCode.getText().toString();
+        mVerify.setOnClickListener(v -> {
+            String code = mVerificationCode.getText().toString();
 
-                if (!otpValidation(code)) {
-                    mVerificationCode.setError("incomplete");
-                    return;
-                }
-                progressBar.show();
-
-                verify(code);
-
+            if (!otpValidation(code)) {
+                mVerificationCode.setError("incomplete");
+                return;
             }
+            progressBar.show();
+
+            verify(code);
+
         });
     }
 
@@ -87,22 +79,16 @@ public class VerificationActivity extends AppCompatActivity {
 
     private void signInWithCredential(PhoneAuthCredential credential) {
         mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            new Handler(Looper.myLooper()).postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    progressBar.hide();
-                                    route();
-                                }
-                            }, 550);
-
-                        } else {
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        new Handler(Looper.myLooper()).postDelayed(() -> {
                             progressBar.hide();
-                            Toast.makeText(VerificationActivity.this, Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_LONG).show();
-                        }
+                            route();
+                        }, 550);
+
+                    } else {
+                        progressBar.hide();
+                        Toast.makeText(VerificationActivity.this, Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_LONG).show();
                     }
                 });
     }
@@ -140,7 +126,6 @@ public class VerificationActivity extends AppCompatActivity {
         @Override
         public void onVerificationFailed(FirebaseException e) {
             Toast.makeText(VerificationActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
-            Log.d("onVerificationFailed", e.getMessage());
         }
     };
 
@@ -157,30 +142,37 @@ public class VerificationActivity extends AppCompatActivity {
 
 
     private void route() {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users").child(FirebaseAuth.getInstance().getUid());
+        String uid = FirebaseAuth.getInstance().getUid();
+        DatabaseReference reference = null;
 
-        reference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                User user = snapshot.getValue(User.class);
-                Intent intent;
+        if (uid != null) {
+            reference = FirebaseDatabase.getInstance().getReference("users").child(uid);
+        }
 
-                if (user.getUsername() == null || user.getUsername().isEmpty() || user.getImage().equals("default")) {
-                    intent = new Intent(VerificationActivity.this, CreateProfileActivity.class);
-                } else {
-                    intent = new Intent(VerificationActivity.this, MainActivity.class);
+        if (reference != null) {
+            reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    User user = snapshot.getValue(User.class);
+                    Intent intent;
+
+                    if (user == null || user.getUsername() == null || user.getUsername().isEmpty() || user.getImage().equals("default")) {
+                        intent = new Intent(VerificationActivity.this, CreateProfileActivity.class);
+                    } else {
+                        intent = new Intent(VerificationActivity.this, MainActivity.class);
+                    }
+
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
                 }
 
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-                finish();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // check internet connection and retry
-            }
-        });
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    // check internet connection and retry
+                }
+            });
+        }
 
     }
 
