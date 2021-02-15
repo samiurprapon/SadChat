@@ -37,7 +37,7 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'androidx.core:core:1.3.2'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    testImplementation 'junit:junit:4.13.1'
+    testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
@@ -61,15 +61,18 @@ dependencies {
     implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
 
 //  image cache library
-    implementation 'com.github.bumptech.glide:glide:4.11.0'
+    implementation 'com.github.bumptech.glide:glide:4.12.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
 
 //    collect permission on runtime
     implementation 'com.karumi:dexter:6.2.0'
 
 //  networking client
-    implementation 'com.squareup.retrofit2:retrofit:2.7.1'
-    implementation 'com.squareup.retrofit2:converter-gson:2.7.1'
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+
+//    Automatic text size scale
+    implementation 'com.intuit.sdp:sdp-android:1.0.6'
 
 //  webRTC library
 //    implementation "org.webrtc:google-webrtc:1.0.27771"

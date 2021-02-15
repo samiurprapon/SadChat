@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="padding_10_dp">10dp</dimen>
+    <dimen name="padding_8_dp">6dp</dimen>
     <dimen name="speech_bubble_corners">10dp</dimen>
     <dimen name="speech_bubble_corners_plus_tail">15dp</dimen>
     <dimen name="speech_bubble_spacing">5dp</dimen>

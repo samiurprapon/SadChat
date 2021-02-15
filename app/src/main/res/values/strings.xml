@@ -20,7 +20,7 @@
     <string name="title_update">Update</string>
     <string name="title_last_text">no messages</string>
     <string name="hint_search_user_by_name">Search user by name…</string>
-    <string name="type_a_message">Type a notification…</string>
+    <string name="type_a_message">write text here…</string>
     <string name="delivered_status">delivered</string>
     <string name="logout">Logout</string>
     <string name="settings">Settings</string>

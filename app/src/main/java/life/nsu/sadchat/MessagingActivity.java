@@ -81,6 +81,7 @@ public class MessagingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         // prevent screenshot
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+//        getWindow().setBackgroundDrawableResource(R.drawable.ic_chat_background);
 
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         setContentView(R.layout.activity_messaging);
@@ -414,14 +415,14 @@ public class MessagingActivity extends AppCompatActivity {
         String token = "null";
 
         if (myUid != null) {
-            if(myUid.hashCode() < friendUid.hashCode()) {
+            if (myUid.hashCode() < friendUid.hashCode()) {
                 token = myUid + friendUid;
             } else {
                 token = friendUid + myUid;
             }
         }
 
-        return  token;
+        return token;
 
     }
 

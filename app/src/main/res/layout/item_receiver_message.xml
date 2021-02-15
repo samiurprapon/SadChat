@@ -11,6 +11,7 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:src="@mipmap/ic_launcher"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -18,18 +19,23 @@
         android:id="@+id/time_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text=""
-        android:textColor="@color/gray_400"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="16dp"
+        android:text="24:02 PM"
+        android:textColor="@color/black"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toRightOf="@id/show_message"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginStart="@dimen/margin_10_dp" />
+        app:layout_constraintStart_toEndOf="@+id/show_message"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/show_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="40dp"
         android:background="@drawable/ic_text_left"
         android:foreground="?attr/selectableItemBackground"
         android:lineSpacingExtra="2dp"
@@ -37,11 +43,14 @@
         android:paddingTop="4dp"
         android:paddingEnd="30dp"
         android:paddingBottom="10dp"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textIsSelectable="true"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/profile_image"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/profile_image"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/profile_image"
+        app:layout_constraintVertical_bias="0.3" />
 
     <TextView
         android:id="@+id/txt_seen"

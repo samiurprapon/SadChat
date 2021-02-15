@@ -19,6 +19,7 @@
         tools:ignore="AllowBackup">
 
         <activity android:name=".MessagingActivity"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
             tools:targetApi="M"/>
         <activity android:name=".CreateProfileActivity" />
         <activity

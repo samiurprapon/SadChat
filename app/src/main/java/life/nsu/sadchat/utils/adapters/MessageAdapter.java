@@ -75,7 +75,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                     .into(holder.mProfilePicture);
         }
 
-        if (position == chatList.size() - 1) {
+        if (position == chatList.size() - 1 && getItemViewType(position) == 1) {
 //            Toast.makeText(context, ""+chat.isIsSeen()+"\n"+chat.getMessage(), Toast.LENGTH_SHORT).show();
             holder.mMessageSeen.setVisibility(View.VISIBLE);
 
