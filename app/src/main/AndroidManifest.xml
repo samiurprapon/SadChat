@@ -5,7 +5,8 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
 
     <application
@@ -18,9 +19,10 @@
         android:theme="@style/Theme.SadChat"
         tools:ignore="AllowBackup">
 
-        <activity android:name=".MessagingActivity"
+        <activity
+            android:name=".MessagingActivity"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
-            tools:targetApi="M"/>
+            tools:targetApi="M" />
         <activity android:name=".CreateProfileActivity" />
         <activity
             android:name=".MainActivity"
