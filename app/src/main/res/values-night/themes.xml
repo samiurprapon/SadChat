@@ -15,10 +15,11 @@
         <!-- Customize your theme here. -->
     </style>
 
-    <style name="Messaging" parent="ThemeOverlay.AppCompat.ActionBar">
+    <style name="Messaging" parent="ThemeOverlay.AppCompat.ActionBar" />
 
-
-    </style>
+    <style name="ThemeOverlay.AppCompat.Dark.ActionBar" parent="Base.ThemeOverlay.AppCompat.ActionBar" />
+    <style name="TextAppearance.AppCompat.Caption" parent="Base.TextAppearance.AppCompat.Caption"/>
+    <style name="TextAppearance.AppCompat.Medium" parent="Base.TextAppearance.AppCompat.Medium" />
 
     <style name="CustomAlertDialog" parent="Theme.AppCompat.Dialog.Alert">
         <item name="android:layout_height">wrap_content</item>

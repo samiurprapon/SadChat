@@ -5,9 +5,10 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,7 +60,10 @@ public class MessagingActivity extends AppCompatActivity {
 
     CircleImageView mProfilePicture;
     TextView mUsername;
-    ImageButton mSend;
+    TextView mOnlineStatus;
+
+
+    ImageView mSend;
     EditText mTextMessage;
     RecyclerView recyclerView;
 
@@ -105,6 +109,7 @@ public class MessagingActivity extends AppCompatActivity {
         // ui elements
         mProfilePicture = findViewById(R.id.profile_image);
         mUsername = findViewById(R.id.tv_username);
+        mOnlineStatus = findViewById(R.id.tv_status);
         mSend = findViewById(R.id.btn_send);
         mTextMessage = findViewById(R.id.et_message);
         recyclerView = findViewById(R.id.recycler_view);
@@ -141,10 +146,16 @@ public class MessagingActivity extends AppCompatActivity {
                 User user = dataSnapshot.getValue(User.class);
 
                 if (user != null) {
-                    mUsername.setText(user.getUsername());
-                }
+                    if (user.getUsername() != null) {
+                        mUsername.setText(user.getUsername());
+                    }
 
-                if (user != null) {
+                    if (user.getActiveStatus().equals("online")) {
+                        mOnlineStatus.setVisibility(View.VISIBLE);
+                    } else {
+                        mOnlineStatus.setVisibility(View.GONE);
+                    }
+
                     if (user.getImage() == null || user.getImage().equals("default")) {
                         mProfilePicture.setImageResource(R.drawable.ic_profile_avatar);
                     } else {
@@ -155,7 +166,6 @@ public class MessagingActivity extends AppCompatActivity {
                                 .into(mProfilePicture);
                     }
                 }
-
                 readMessages(user);
             }
 
