@@ -77,14 +77,16 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
         if (position == chatList.size() - 1 && getItemViewType(position) == 1) {
 //            Toast.makeText(context, ""+chat.isIsSeen()+"\n"+chat.getMessage(), Toast.LENGTH_SHORT).show();
-            holder.mMessageSeen.setVisibility(View.VISIBLE);
+//            holder.mMessageSeen.setVisibility(View.VISIBLE);
 
             if (chat.isIsSeen()) {
-                holder.mMessageSeen.setText("seen"+" at "+holder.convertTime(chat.getSeenTime()));
+                // image indicator
+                holder.mReadStatus.setImageResource(R.drawable.ic_text_seen);
             } else {
-                holder.mMessageSeen.setText(R.string.delivered_status);
+                // image indicator
+                holder.mReadStatus.setImageResource(R.drawable.ic_delivered);
             }
-        } else {
+        } else if(position == chatList.size() - 1 && getItemViewType(position) == 0){
             holder.mMessageSeen.setVisibility(View.GONE);
         }
 
@@ -101,6 +103,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         public ImageView mProfilePicture;
         public TextView mMessageSeen;
         public TextView mTime;
+        ImageView mReadStatus;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -108,6 +111,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             mShowMessage = itemView.findViewById(R.id.show_message);
             mProfilePicture = itemView.findViewById(R.id.profile_image);
             mMessageSeen = itemView.findViewById(R.id.txt_seen);
+            mReadStatus = itemView.findViewById(R.id.iv_read_status);
             mTime = itemView.findViewById(R.id.time_tv);
         }
 
